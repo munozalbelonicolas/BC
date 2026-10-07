@@ -108,7 +108,6 @@ class CustomerAccountApp {
       return;
     }
 
-    const mount = document.getElementById('portal-view-mount');
     const hash = window.location.hash.replace(/^#\/?/, '').trim();
     const parts = hash.split('/');
     const mainSection = parts[0] || 'dashboard';
@@ -116,6 +115,9 @@ class CustomerAccountApp {
 
     // Update active nav state in layout
     this.layout.setActiveRoute(mainSection);
+
+    const mount = document.getElementById('portal-view-mount');
+    if (!mount) return;
 
     // Show smooth skeleton during view initialization
     mount.innerHTML = `
@@ -217,8 +219,14 @@ class CustomerAccountApp {
   }
 }
 
-// Bootstrap application on DOM ready
-document.addEventListener('DOMContentLoaded', () => {
+// Bootstrap application
+function bootstrapAccountApp() {
   const app = new CustomerAccountApp();
   app.init();
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bootstrapAccountApp);
+} else {
+  bootstrapAccountApp();
+}

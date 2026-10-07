@@ -33,7 +33,7 @@ export class AccountLayout {
     ];
 
     const sidebarNavHtml = navItems.map(item => `
-      <a class="portal-nav-item ${this.activeRoute === item.id ? 'active' : ''}" data-route="${item.id}">
+      <a href="#${item.id}" class="portal-nav-item ${this.activeRoute === item.id ? 'active' : ''}" data-route="${item.id}" style="cursor:pointer;">
         ${item.icon}
         <span>${item.label}</span>
         ${item.badge ? `<span class="portal-nav-badge">${item.badge}</span>` : ''}
@@ -41,7 +41,7 @@ export class AccountLayout {
     `).join('');
 
     const mobileNavHtml = navItems.map(item => `
-      <a class="mobile-nav-item ${this.activeRoute === item.id ? 'active' : ''}" data-route="${item.id}">
+      <a href="#${item.id}" class="mobile-nav-item ${this.activeRoute === item.id ? 'active' : ''}" data-route="${item.id}" style="cursor:pointer;">
         ${item.label} ${item.badge ? `(${item.badge})` : ''}
       </a>
     `).join('');
@@ -97,7 +97,7 @@ export class AccountLayout {
           </nav>
 
           <div style="margin-top:16px; padding-top:12px; border-top:1px solid var(--acc-border);">
-            <button class="portal-nav-item" id="sidebar-logout-btn" style="color:var(--acc-danger); width:100%; border:none; background:none; text-align:left;">
+            <button class="portal-nav-item" id="sidebar-logout-btn" style="color:var(--acc-danger); width:100%; border:none; background:none; text-align:left; cursor:pointer;">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
               <span>Cerrar Sesión</span>
             </button>
@@ -119,8 +119,7 @@ export class AccountLayout {
       link.addEventListener('click', (e) => {
         e.preventDefault();
         const route = link.dataset.route;
-        this.activeRoute = route;
-        this.render();
+        this.setActiveRoute(route);
         this.onNavigate(route);
       });
     });
@@ -133,6 +132,7 @@ export class AccountLayout {
     const bellBtn = this.container.querySelector('#bell-notif-btn');
     if (bellBtn) {
       bellBtn.addEventListener('click', () => {
+        this.setActiveRoute('notificaciones');
         this.onNavigate('notificaciones');
       });
     }
@@ -140,6 +140,26 @@ export class AccountLayout {
 
   setActiveRoute(route) {
     this.activeRoute = route;
-    this.render();
+    if (!this.container) return;
+    this.container.querySelectorAll('[data-route]').forEach(link => {
+      if (link.dataset.route === route) {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
+    });
+  }
+
+  updateUnreadCount(count) {
+    this.unreadNotificationsCount = count;
+    const badge = this.container.querySelector('#bell-notif-btn .portal-notification-badge');
+    if (count > 0) {
+      if (!badge) {
+        const bell = this.container.querySelector('#bell-notif-btn');
+        bell?.insertAdjacentHTML('beforeend', `<span class="portal-notification-badge"></span>`);
+      }
+    } else {
+      badge?.remove();
+    }
   }
 }
