@@ -44,3 +44,28 @@ npm run dev
 # Compilar para producción
 npm run build
 ```
+
+## 🗄️ Configuración de Base de Datos (Supabase)
+
+El proyecto incluye soporte nativo y automático para **Supabase**:
+
+1. Crea tu proyecto en [Supabase](https://supabase.com).
+2. Ve al **SQL Editor** en tu dashboard de Supabase y ejecuta el contenido del script [`supabase/schema.sql`](file:///Users/nicolasmunoz/BC/supabase/schema.sql).
+   - Crea las tablas `products`, `orders`, `categories`, `newsletter_subscribers` y `testimonials`.
+   - Configura las políticas de seguridad **Row Level Security (RLS)**.
+   - Siembra el catálogo inicial completo de productos.
+3. Copia el archivo `.env.example` como `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+4. Agrega tus credenciales obtenidas en *Project Settings > API*:
+   ```env
+   VITE_SUPABASE_URL=https://tu-proyecto.supabase.co
+   VITE_SUPABASE_ANON_KEY=tu-anon-key
+   ```
+5. La aplicación detectará automáticamente Supabase y sincronizará en tiempo real:
+   - Lectura de productos desde la tabla `products`.
+   - Registro de nuevas compras en `orders`.
+   - Suscriptores del newsletter en `newsletter_subscribers`.
+   - Fallback automático y resiliente a datos locales si la base de datos no está conectada.
+

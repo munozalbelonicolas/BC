@@ -1,5 +1,15 @@
 import { PRODUCTS, CATEGORIES, FAQS, TESTIMONIALS } from './data/products.js';
 import { store } from './state.js';
+import { 
+  getProducts, 
+  saveOrderToSupabase, 
+  subscribeNewsletterToSupabase, 
+  signInUser, 
+  signUpUser, 
+  isSupabaseConfigured 
+} from './services/supabase.js';
+
+let currentProducts = PRODUCTS;
 
 // Utility: format Argentine Peso currency
 function formatARS(amount) {
@@ -92,7 +102,7 @@ function renderCatalog() {
   const featuredGrid = document.getElementById('featuredProductsGrid');
   const newArrivalsGrid = document.getElementById('newArrivalsGrid');
 
-  let filtered = [...PRODUCTS];
+  let filtered = [...currentProducts];
 
   // Category filter
   if (store.activeCategory === 'ofertas') {
@@ -145,7 +155,7 @@ function renderCatalog() {
 
   // New arrivals grid (remaining products or newly marked ones)
   if (newArrivalsGrid) {
-    const newItems = PRODUCTS.filter(p => p.isNew || !p.featured);
+    const newItems = currentProducts.filter(p => p.isNew || !p.featured);
     newArrivalsGrid.innerHTML = newItems.slice(0, 4).map(createProductCardHTML).join('');
   }
 }
@@ -167,7 +177,7 @@ function setupSearch() {
     }
 
     const q = query.toLowerCase().trim();
-    const matches = PRODUCTS.filter(p => 
+    const matches = currentProducts.filter(p => 
       p.name.toLowerCase().includes(q) || 
       p.brand.toLowerCase().includes(q) ||
       p.category.toLowerCase().includes(q)
@@ -441,7 +451,7 @@ function updateWishlistUI() {
   const wishlistBody = document.getElementById('wishlistDrawerBody');
   if (!wishlistBody) return;
 
-  const wishlistProducts = PRODUCTS.filter(p => store.isInWishlist(p.id));
+  const wishlistProducts = currentProducts.filter(p => store.isInWishlist(p.id));
 
   if (wishlistProducts.length === 0) {
     wishlistBody.innerHTML = `
@@ -501,7 +511,7 @@ function closeWishlistDrawer() {
    PRODUCT QUICK VIEW MODAL
    =================================================================== */
 function openProductModal(productId) {
-  const product = PRODUCTS.find(p => p.id === productId);
+  const product = currentProducts.find(p => p.id === productId);
   if (!product) return;
 
   const modalBackdrop = document.getElementById('productModalBackdrop');
@@ -786,6 +796,7 @@ function renderCheckoutStep() {
 
     document.getElementById('checkoutConfirmOrderBtn')?.addEventListener('click', () => {
       const createdOrder = store.createOrder(checkoutFormData);
+      saveOrderToSupabase(createdOrder).catch(console.error);
       checkoutStep = 3;
       renderCheckoutConfirmation(createdOrder);
     });
@@ -1066,6 +1077,15 @@ document.addEventListener('DOMContentLoaded', () => {
   setupFaqs();
   setupWhatsappChat();
 
+  // Fetch live products from Supabase (with automatic fallback)
+  getProducts().then(prods => {
+    if (prods && prods.length > 0) {
+      currentProducts = prods;
+      renderCatalog();
+      updateWishlistUI();
+    }
+  });
+
   // Subscribe state changes
   store.subscribe(() => {
     updateCartUI();
@@ -1081,7 +1101,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const id = addCartBtn.dataset.id;
       store.addToCart(id, 1);
       openCartDrawer();
-      const p = PRODUCTS.find(prod => prod.id === id);
+      const p = currentProducts.find(prod => prod.id === id);
       showToast(`¡${p ? p.name : 'Producto'} añadido al carrito!`, 'success');
       return;
     }
@@ -1256,6 +1276,7 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     const email = document.getElementById('newsletterEmail')?.value;
     if (email) {
+      subscribeNewsletterToSupabase(email).catch(console.error);
       showToast(`¡Gracias por suscribirte (${email})! Usá el cupón BC10 para 10% OFF.`, 'success');
       document.getElementById('newsletterEmail').value = '';
     }
