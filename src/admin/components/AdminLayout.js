@@ -228,6 +228,12 @@ export class AdminLayout {
                 <kbd>⌘K</kbd>
               </div>
 
+              <!-- Customer Portal link -->
+              <a href="/cuenta.html" class="store-preview-btn" style="border-color:#38bdf8; color:#38bdf8;" title="Ver Portal de Cuenta de Cliente">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/></svg>
+                <span>Portal Cliente 👤</span>
+              </a>
+
               <!-- Storefront link -->
               <a href="/" target="_blank" class="store-preview-btn">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>

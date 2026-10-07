@@ -59,6 +59,13 @@ export class AccountLayout {
           </div>
 
           <div class="portal-header-actions">
+            ${user?.email === 'munozalbelonicolas@gmail.com' || user?.role === 'admin' ? `
+              <a href="/admin.html" class="portal-back-store-btn" style="background:#0f172a; color:#f8fafc; font-weight:700; border:1px solid #334155;" title="Ir al Panel de Administración de la tienda">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                <span>Panel Admin ⚡</span>
+              </a>
+            ` : ''}
+
             <a href="/" class="portal-back-store-btn">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
               <span>Volver a la Tienda</span>
@@ -91,6 +98,19 @@ export class AccountLayout {
       <div class="portal-layout">
         <!-- Desktop Sidebar -->
         <aside class="portal-sidebar">
+          ${user?.email === 'munozalbelonicolas@gmail.com' || user?.role === 'admin' ? `
+            <div style="margin-bottom:16px; padding:12px; background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius:var(--acc-radius-md); color:white;">
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
+                <span style="font-size:11px; font-weight:700; color:#38bdf8; text-transform:uppercase; letter-spacing:0.04em;">Sos Administrador</span>
+                <span style="background:#f59e0b; color:#0f172a; font-size:10px; font-weight:800; padding:1px 6px; border-radius:9999px;">ADMIN</span>
+              </div>
+              <p style="font-size:11.5px; color:#cbd5e1; margin-bottom:10px; line-height:1.4;">Estás en el Portal de Cliente. Para gestionar el catálogo, pedidos globales y stock:</p>
+              <a href="/admin.html" class="account-btn" style="width:100%; font-size:12px; padding:8px 10px; text-decoration:none; background:#2563eb; color:white; justify-content:center; border-radius:var(--acc-radius-sm);">
+                Ir al Panel Admin ⚡
+              </a>
+            </div>
+          ` : ''}
+
           <div class="portal-nav-group-title">Menú de Cuenta</div>
           <nav style="display:flex; flex-direction:column; gap:2px;">
             ${sidebarNavHtml}
