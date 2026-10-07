@@ -7,8 +7,15 @@
 import { createClient } from '@supabase/supabase-js';
 import { environment } from '../core/environment.js';
 
-const supabaseUrl = import.meta?.env?.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta?.env?.VITE_SUPABASE_ANON_KEY || '';
+const supabaseUrl = 
+  import.meta?.env?.VITE_SUPABASE_URL || 
+  (typeof process !== 'undefined' && process?.env?.VITE_SUPABASE_URL) || 
+  'https://fumzsmzzzprakrzczrhl.supabase.co';
+
+const supabaseAnonKey = 
+  import.meta?.env?.VITE_SUPABASE_ANON_KEY || 
+  (typeof process !== 'undefined' && process?.env?.VITE_SUPABASE_ANON_KEY) || 
+  'sb_publishable_5C9n9QVSfX1I-r2fNDGxyw_vWSi_QmF';
 
 export const isSupabaseConfigured = Boolean(
   supabaseUrl && 
