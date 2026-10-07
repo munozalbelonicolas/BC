@@ -1,11 +1,14 @@
 /**
  * @file themeService.js
- * Theme management (light / dark) with persistence in localStorage and system preference detection.
+ * Theme management (light / dark) defaulting strictly to clean Light mode.
  */
 
 class ThemeService {
   constructor() {
-    this.storageKey = 'bc_theme';
+    this.storageKey = 'bc_theme_v2';
+    try {
+      localStorage.removeItem('bc_theme');
+    } catch {}
     this.theme = this.detectInitialTheme();
     this.applyTheme(this.theme);
   }
@@ -16,11 +19,7 @@ class ThemeService {
       if (saved === 'dark' || saved === 'light') return saved;
     } catch {}
 
-    if (typeof window !== 'undefined' && window.matchMedia) {
-      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        return 'dark';
-      }
-    }
+    // Default strictly to clean Light mode
     return 'light';
   }
 
