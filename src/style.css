@@ -178,9 +178,9 @@ ul {
 }
 
 .site-header-logo-img {
-  height: 46px;
+  height: 74px;
   width: auto;
-  max-width: 220px;
+  max-width: 350px;
   object-fit: contain;
   display: block;
   transition: transform 0.25s ease;
@@ -191,9 +191,9 @@ ul {
 }
 
 .site-footer-logo-img {
-  height: 42px;
+  height: 67px;
   width: auto;
-  max-width: 210px;
+  max-width: 336px;
   object-fit: contain;
   display: block;
 }
@@ -2972,6 +2972,10 @@ ul {
   }
   .main-navbar {
     flex-wrap: wrap;
+  }
+  .site-header-logo-img {
+    height: 58px;
+    max-width: 260px;
   }
   .search-container {
     order: 3;

@@ -128,9 +128,9 @@ button, input, select, textarea {
 
 .portal-brand img,
 .portal-brand-logo {
-  height: 34px;
+  height: 54px;
   width: auto;
-  max-width: 170px;
+  max-width: 272px;
   object-fit: contain;
   display: block;
 }
@@ -1049,9 +1049,9 @@ button, input, select, textarea {
 }
 
 .auth-logo-img {
-  height: 38px;
+  height: 61px;
   width: auto;
-  max-width: 180px;
+  max-width: 288px;
   object-fit: contain;
   display: block;
 }
