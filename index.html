@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BC Especial Import | Importados de confianza al mejor precio</title>
+  <meta name="description" content="Descubrí lo último en tecnología, electrodomésticos, hogar y aire libre en BC Especial Import. Productos 100% originales con garantía y envíos a todo el país.">
+  
+  <!-- Modern Google Fonts: Plus Jakarta Sans & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/src/style.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90' font-weight='bold' fill='%230066ff'>BC</text></svg>">
+</head>
+<body>
+
+  <!-- 1. TOP ANNOUNCEMENT BAR -->
+  <header class="site-header" id="mainHeader">
+    <div class="top-announcement-bar">
+      <div class="container announcement-inner">
+        <div class="announcement-item">
+          <svg class="announcement-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 18H3c-.6 0-1-.4-1-1V7c0-.6.4-1 1-1h10c.6 0 1 .4 1 1v11"/><path d="M14 9h4l4 4v4c0 .6-.4 1-1 1h-2"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>
+          <span>Envíos a todo el país</span>
+        </div>
+        <div class="announcement-divider">|</div>
+        <div class="announcement-item">
+          <svg class="announcement-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+          <span>Productos originales</span>
+        </div>
+        <div class="announcement-divider">|</div>
+        <div class="announcement-item">
+          <svg class="announcement-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span>Compra segura</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. MAIN NAVBAR -->
+    <div class="main-navbar-wrapper">
+      <div class="container main-navbar">
+        <!-- Logo matching screenshot -->
+        <a href="#hero" class="brand-logo" id="logoLink" aria-label="BC Especial Import Inicio">
+          <div class="logo-mark">
+            <span class="logo-bc">BC</span>
+            <div class="logo-text-block">
+              <span class="logo-especial">ESPECIAL</span>
+              <div class="logo-import-line">
+                <span class="line-rule"></span>
+                <span class="logo-import">IMPORT</span>
+                <span class="line-rule"></span>
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <!-- Search input with autocomplete -->
+        <div class="search-container" id="searchContainer">
+          <div class="search-input-group">
+            <svg class="search-prefix-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input 
+              type="text" 
+              id="searchInput" 
+              class="search-input" 
+              placeholder="¿Qué estás buscando?" 
+              autocomplete="off"
+              aria-label="Buscar productos"
+            >
+            <button class="search-action-btn" id="searchSubmitBtn" aria-label="Ejecutar búsqueda">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            </button>
+          </div>
+          <!-- Live search dropdown -->
+          <div class="search-dropdown hidden" id="searchDropdown"></div>
+        </div>
+
+        <!-- Header Actions: Account & Cart -->
+        <div class="header-actions">
+          <button class="header-action-btn" id="accountBtn" aria-label="Mi Cuenta">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+            <span class="action-btn-label">Mi cuenta</span>
+          </button>
+
+          <button class="header-action-btn" id="wishlistHeaderBtn" aria-label="Ver Favoritos">
+            <div class="icon-badge-wrapper">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+              <span class="badge-count wishlist-badge hidden" id="wishlistCount">0</span>
+            </div>
+            <span class="action-btn-label">Favoritos</span>
+          </button>
+
+          <button class="header-action-btn cart-btn-highlight" id="cartHeaderBtn" aria-label="Abrir Carrito">
+            <div class="icon-badge-wrapper">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+              <span class="badge-count cart-badge" id="cartCount">0</span>
+            </div>
+            <span class="action-btn-label">Carrito</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. SECONDARY CATEGORY NAVBAR -->
+    <nav class="secondary-nav-bar" aria-label="Categorías de productos">
+      <div class="container nav-bar-inner">
+        <ul class="nav-links-list" id="navLinksList">
+          <li><button class="nav-link-btn" data-category="electrodomesticos">Electrodomésticos</button></li>
+          <li><button class="nav-link-btn" data-category="tecnologia">Tecnología</button></li>
+          <li><button class="nav-link-btn" data-category="hogar">Hogar</button></li>
+          <li><button class="nav-link-btn" data-category="aire-libre">Aire Libre</button></li>
+          <li><button class="nav-link-btn nav-link-ofertas" data-category="ofertas">Ofertas</button></li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <!-- 4. HERO SECTION (Image 1) -->
+    <section class="hero-section" id="hero">
+      <div class="container hero-container">
+        <div class="hero-content">
+          <div class="hero-tagline-badge">
+            <span>TU MUNDO, SIN LÍMITES</span>
+            <span class="tagline-line"></span>
+          </div>
+          <h1 class="hero-title">
+            Importados de<br>
+            confianza, al<br>
+            <span class="hero-title-blue">mejor precio</span>
+          </h1>
+          <p class="hero-subtitle">
+            Descubrí lo último en tecnología, electrodomésticos, hogar y más. Productos originales, con garantía y envío a todo el país.
+          </p>
+          <div class="hero-cta-group">
+            <a href="#destacados" class="btn btn-primary" id="heroCtaVerProductos">
+              <span>Ver productos</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+            <a href="#nuestras-categorias" class="btn btn-outline" id="heroCtaExplorar">
+              <span>Explorar categorías</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="hero-media">
+          <div class="hero-image-card">
+            <img 
+              src="/images/hero_product_showcase.jpg" 
+              alt="Electrodomésticos y Tecnología BC Especial Import" 
+              class="hero-showcase-img"
+              loading="eager"
+            >
+            <!-- Floating Trust Badges for Richness -->
+            <div class="floating-hero-pill pill-top">
+              <span class="pill-dot"></span>
+              <span>100% Originales & Sellados</span>
+            </div>
+            <div class="floating-hero-pill pill-bottom">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              <span>Hasta 12 Cuotas Fijas</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. THREE TRUST CARDS (Image 1) -->
+    <section class="trust-cards-section">
+      <div class="container">
+        <div class="trust-cards-grid">
+          <!-- Card 1 -->
+          <div class="trust-card" tabindex="0">
+            <div class="trust-card-icon-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            </div>
+            <div class="trust-card-content">
+              <h3 class="trust-card-title">Compra segura</h3>
+              <p class="trust-card-desc">Tus datos siempre protegidos</p>
+            </div>
+            <svg class="trust-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="trust-card" tabindex="0">
+            <div class="trust-card-icon-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 18H3c-.6 0-1-.4-1-1V7c0-.6.4-1 1-1h10c.6 0 1 .4 1 1v11"/><path d="M14 9h4l4 4v4c0 .6-.4 1-1 1h-2"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>
+            </div>
+            <div class="trust-card-content">
+              <h3 class="trust-card-title">Envíos a todo el país</h3>
+              <p class="trust-card-desc">Rápidos y confiables</p>
+            </div>
+            <svg class="trust-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="trust-card" tabindex="0">
+            <div class="trust-card-icon-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+            </div>
+            <div class="trust-card-content">
+              <h3 class="trust-card-title">Productos originales</h3>
+              <p class="trust-card-desc">Con garantía oficial</p>
+            </div>
+            <svg class="trust-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. NUESTRAS CATEGORÍAS (Image 1) -->
+    <section class="categories-section" id="nuestras-categorias">
+      <div class="container">
+        <div class="section-heading-row">
+          <div class="section-title-wrapper">
+            <h2 class="section-title-sm">NUESTRAS CATEGORÍAS</h2>
+            <span class="section-title-line"></span>
+          </div>
+        </div>
+
+        <div class="categories-grid">
+          <!-- Category Card 1: Electrodomésticos -->
+          <div class="category-card" data-category="electrodomesticos" tabindex="0" role="button" aria-label="Categoría Electrodomésticos">
+            <div class="category-img-wrapper">
+              <img src="/images/cat_electrodomesticos.jpg" alt="Electrodomésticos de cocina" loading="lazy">
+              <div class="category-overlay"></div>
+            </div>
+            <div class="category-card-footer">
+              <span class="category-card-name">Electrodomésticos</span>
+              <div class="category-card-btn" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Category Card 2: Tecnología -->
+          <div class="category-card" data-category="tecnologia" tabindex="0" role="button" aria-label="Categoría Tecnología">
+            <div class="category-img-wrapper">
+              <img src="/images/cat_tecnologia.jpg" alt="Tecnología y computación" loading="lazy">
+              <div class="category-overlay"></div>
+            </div>
+            <div class="category-card-footer">
+              <span class="category-card-name">Tecnología</span>
+              <div class="category-card-btn" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Category Card 3: Hogar -->
+          <div class="category-card" data-category="hogar" tabindex="0" role="button" aria-label="Categoría Hogar">
+            <div class="category-img-wrapper">
+              <img src="/images/cat_hogar.jpg" alt="Hogar y confort" loading="lazy">
+              <div class="category-overlay"></div>
+            </div>
+            <div class="category-card-footer">
+              <span class="category-card-name">Hogar</span>
+              <div class="category-card-btn" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Category Card 4: Aire libre -->
+          <div class="category-card" data-category="aire-libre" tabindex="0" role="button" aria-label="Categoría Aire Libre">
+            <div class="category-img-wrapper">
+              <img src="/images/cat_aire_libre.jpg" alt="Camping y aire libre" loading="lazy">
+              <div class="category-overlay"></div>
+            </div>
+            <div class="category-card-footer">
+              <span class="category-card-name">Aire libre</span>
+              <div class="category-card-btn" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. VALUE PROPS FOUR-PILL STRIP (Image 2) -->
+    <section class="value-strip-section">
+      <div class="container">
+        <div class="value-strip-grid">
+          <div class="value-pill">
+            <div class="pill-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+            </div>
+            <div>
+              <div class="pill-title">Productos originales</div>
+              <div class="pill-desc">Con garantía oficial</div>
+            </div>
+          </div>
+
+          <div class="value-pill">
+            <div class="pill-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m20.59 13.41-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" x2="7.01" y1="7" y2="7"/></svg>
+            </div>
+            <div>
+              <div class="pill-title">Buenos precios</div>
+              <div class="pill-desc">Calidad al mejor precio</div>
+            </div>
+          </div>
+
+          <div class="value-pill">
+            <div class="pill-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 18H3c-.6 0-1-.4-1-1V7c0-.6.4-1 1-1h10c.6 0 1 .4 1 1v11"/><path d="M14 9h4l4 4v4c0 .6-.4 1-1 1h-2"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>
+            </div>
+            <div>
+              <div class="pill-title">Envíos a todo el país</div>
+              <div class="pill-desc">Rápidos y confiables</div>
+            </div>
+          </div>
+
+          <div class="value-pill">
+            <div class="pill-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+            </div>
+            <div>
+              <div class="pill-title">Atención al cliente</div>
+              <div class="pill-desc">Te ayudamos siempre</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. SOBRE NOSOTROS (Image 2) -->
+    <section class="about-section" id="sobre-nosotros">
+      <div class="container about-container">
+        <div class="about-content">
+          <div class="section-title-wrapper">
+            <span class="section-title-sm">SOBRE NOSOTROS</span>
+            <span class="section-title-line"></span>
+          </div>
+          <h2 class="about-title">
+            Tu confianza<br>
+            <span class="hero-title-blue">nos impulsa</span>
+          </h2>
+          <p class="about-text">
+            En BC Especial Import trabajamos para acercarte lo último en tecnología, electrodomésticos, hogar y más. Ofrecemos productos originales, con garantía oficial y un servicio pensado en vos, con envíos a todo el país.
+          </p>
+          <button class="btn btn-outline about-cta-btn" id="openAboutModalBtn">
+            <span>Conocé más sobre nosotros</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </button>
+        </div>
+
+        <div class="about-media">
+          <div class="about-image-card">
+            <img 
+              src="/images/store_front_facade.jpg" 
+              alt="Fachada de tienda BC Especial Import" 
+              class="about-img"
+              loading="lazy"
+            >
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. LO QUE DICEN NUESTROS CLIENTES (Image 2) -->
+    <section class="testimonials-section">
+      <div class="container">
+        <div class="section-title-wrapper">
+          <span class="section-title-sm">LO QUE DICEN NUESTROS CLIENTES</span>
+          <span class="section-title-line"></span>
+        </div>
+
+        <div class="testimonials-grid">
+          <!-- Testimonial 1: Carla M. -->
+          <div class="testimonial-card">
+            <div class="testimonial-avatar-wrap">
+              <img src="/images/avatar_carla.jpg" alt="Carla M." class="testimonial-avatar">
+            </div>
+            <div class="testimonial-body">
+              <p class="testimonial-quote">
+                “Excelente experiencia. El producto llegó en tiempo y forma, bien embalado y con garantía oficial. Sin dudas, volvería a comprar.”
+              </p>
+              <div class="testimonial-author-row">
+                <span class="testimonial-author-name">Carla M.</span>
+                <div class="star-rating-row" aria-label="5 de 5 estrellas">
+                  <span class="star-gold">★</span><span class="star-gold">★</span><span class="star-gold">★</span><span class="star-gold">★</span><span class="star-gold">★</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Testimonial 2: Martín R. -->
+          <div class="testimonial-card">
+            <div class="testimonial-avatar-wrap">
+              <img src="/images/avatar_martin.jpg" alt="Martín R." class="testimonial-avatar">
+            </div>
+            <div class="testimonial-body">
+              <p class="testimonial-quote">
+                “Muy buena atención y asesoramiento. Compré un televisor y todo fue perfecto. Recomendados.”
+              </p>
+              <div class="testimonial-author-row">
+                <span class="testimonial-author-name">Martín R.</span>
+                <div class="star-rating-row" aria-label="5 de 5 estrellas">
+                  <span class="star-gold">★</span><span class="star-gold">★</span><span class="star-gold">★</span><span class="star-gold">★</span><span class="star-gold">★</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. PROMO BANNER: EXPLORÁ TODAS NUESTRAS CATEGORÍAS (Image 2) -->
+    <section class="promo-banner-section">
+      <div class="container">
+        <div class="promo-banner-card banner-sky">
+          <div class="promo-banner-content">
+            <h2 class="promo-banner-title">
+              Explorá todas <span class="promo-highlight-blue">nuestras categorías</span>
+            </h2>
+            <p class="promo-banner-subtitle">
+              Tecnología, electrodomésticos, hogar, aire libre y mucho más.
+            </p>
+            <button class="btn btn-primary promo-btn" id="bannerVerCategoriasBtn">
+              <span>Ver todas las categorías</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </button>
+          </div>
+          <div class="promo-banner-media">
+            <img src="/images/promo_categories.jpg" alt="Colección de categorías" class="promo-montage-img" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11. PRODUCTOS DESTACADOS (Image 3) -->
+    <section class="products-section" id="destacados">
+      <div class="container">
+        <div class="products-header-row">
+          <div>
+            <div class="products-title-wrapper">
+              <h2 class="products-section-title">Productos <span class="hero-title-blue">destacados</span></h2>
+              <span class="title-underline-indicator"></span>
+            </div>
+            <p class="products-section-desc">Tecnología, calidad y los mejores precios, en un solo lugar.</p>
+          </div>
+          <a href="#catalogo-completo" class="section-link-more" id="linkVerTodosDestacados">
+            <span>Ver todos los productos</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <!-- Filter & Sort Bar -->
+        <div class="catalog-controls-bar">
+          <div class="filter-pills-list" id="categoryFilterPills">
+            <button class="filter-pill active" data-cat="todos">Todos</button>
+            <button class="filter-pill" data-cat="electrodomesticos">Electrodomésticos</button>
+            <button class="filter-pill" data-cat="tecnologia">Tecnología</button>
+            <button class="filter-pill" data-cat="hogar">Hogar</button>
+            <button class="filter-pill" data-cat="aire-libre">Aire Libre</button>
+            <button class="filter-pill pill-oferta" data-cat="ofertas">Ofertas 🔥</button>
+          </div>
+
+          <div class="sort-wrapper">
+            <label for="sortSelect" class="sort-label">Ordenar:</label>
+            <select id="sortSelect" class="sort-select">
+              <option value="default">Recomendados</option>
+              <option value="price-asc">Precio: Menor a Mayor</option>
+              <option value="price-desc">Precio: Mayor a Menor</option>
+              <option value="rating">Mejor calificados</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Products Grid Container -->
+        <div class="products-grid" id="featuredProductsGrid">
+          <!-- Rendered dynamically via JS matching the exact 4 cards in screenshot 3 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 12. PROMO BANNER: OFERTAS IMPORTADAS (Image 3) -->
+    <section class="promo-banner-section">
+      <div class="container">
+        <div class="promo-banner-card banner-gradient-tech">
+          <div class="promo-banner-content">
+            <h2 class="promo-banner-title">
+              Ofertas <span class="promo-highlight-blue">importadas</span>
+            </h2>
+            <p class="promo-banner-subtitle">
+              Las mejores marcas del mundo, ahora más cerca tuyo.
+            </p>
+            <button class="btn btn-primary promo-btn" id="bannerVerOfertasBtn">
+              <span>Ver ofertas</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </button>
+          </div>
+          <div class="promo-banner-media">
+            <img src="/images/promo_ofertas.jpg" alt="Ofertas de tecnología" class="promo-montage-img" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 13. NUEVOS INGRESOS (Image 3) -->
+    <section class="products-section new-arrivals-section" id="nuevos-ingresos">
+      <div class="container">
+        <div class="products-header-row">
+          <div class="products-title-wrapper">
+            <h2 class="products-section-title">Nuevos ingresos</h2>
+            <span class="title-underline-indicator"></span>
+          </div>
+          <button class="section-link-more" id="linkVerTodosNuevos">
+            <span>Ver todos los nuevos ingresos</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </button>
+        </div>
+
+        <div class="products-grid" id="newArrivalsGrid">
+          <!-- Rendered dynamically via JS matching the screenshot items -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 14. PREGUNTAS FRECUENTES & ATENCIÓN AL CLIENTE (Image 4) -->
+    <section class="faq-support-section" id="preguntas-frecuentes">
+      <div class="container faq-support-container">
+        <!-- Left: Accordion FAQ -->
+        <div class="faq-column">
+          <div class="section-title-wrapper">
+            <span class="section-title-sm">PREGUNTAS FRECUENTES</span>
+            <span class="section-title-line"></span>
+          </div>
+          <h2 class="faq-heading">¿Tienes alguna duda?</h2>
+          <p class="faq-subtext">Aquí respondemos las preguntas más comunes para que compres con total confianza.</p>
+
+          <div class="accordion-list" id="faqAccordion">
+            <!-- FAQ items populated via JS -->
+          </div>
+        </div>
+
+        <!-- Right: Atención al Cliente -->
+        <div class="support-column">
+          <div class="section-title-wrapper">
+            <span class="section-title-sm">ATENCIÓN AL CLIENTE</span>
+            <span class="section-title-line"></span>
+          </div>
+          <h2 class="support-heading">Estamos para ayudarte</h2>
+          <p class="support-subtext">Contáctanos por el canal que prefieras. Nuestro equipo te atenderá lo antes posible.</p>
+
+          <div class="support-channels-list">
+            <!-- Channel 1: WhatsApp -->
+            <button class="support-channel-card channel-whatsapp" id="channelWhatsappBtn">
+              <div class="channel-icon-circle bg-whatsapp">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm5.78 14.12c-.24.68-1.21 1.27-1.74 1.34-.48.06-1.07.09-3.23-.81-2.58-1.07-4.22-3.69-4.35-3.86-.13-.17-1.04-1.38-1.04-2.64 0-1.25.66-1.87.9-2.12.23-.25.52-.31.69-.31.17 0 .35 0 .5.01.16.01.38-.06.59.45.22.53.75 1.83.82 1.96.07.14.12.3.02.48-.09.18-.14.29-.28.45-.14.16-.3.35-.43.47-.14.14-.29.29-.12.58.17.29.74 1.22 1.6 1.98 1.1 0.98 2.03 1.29 2.32 1.43.29.14.46.12.63-.08.17-.2.74-.86.94-1.16.2-.29.4-.24.68-.14.28.1 1.79.84 2.1 1 .31.15.52.23.59.36.07.13.07.76-.17 1.44z"/></svg>
+              </div>
+              <div class="channel-info">
+                <span class="channel-name">WhatsApp</span>
+                <span class="channel-detail">Respuesta rápida</span>
+              </div>
+              <svg class="channel-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+
+            <!-- Channel 2: Teléfono -->
+            <a href="tel:01112345678" class="support-channel-card channel-phone">
+              <div class="channel-icon-circle bg-blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              </div>
+              <div class="channel-info">
+                <span class="channel-name">Teléfono</span>
+                <span class="channel-detail">Lun a Vie de 9 a 18 hs</span>
+              </div>
+              <svg class="channel-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+            </a>
+
+            <!-- Channel 3: Email -->
+            <a href="mailto:info@bcespecialimport.com.ar" class="support-channel-card channel-email">
+              <div class="channel-icon-circle bg-blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              </div>
+              <div class="channel-info">
+                <span class="channel-name">Email</span>
+                <span class="channel-detail">Te respondemos en menos de 24 hs</span>
+              </div>
+              <svg class="channel-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 15. NEWSLETTER BOX (Image 4) -->
+    <section class="newsletter-section">
+      <div class="container">
+        <div class="newsletter-box">
+          <div class="newsletter-left">
+            <div class="newsletter-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            </div>
+            <div>
+              <div class="newsletter-badge-title">SUSCRÍBETE A NUESTRO NEWSLETTER</div>
+              <h3 class="newsletter-heading">Recibí ofertas y novedades</h3>
+              <p class="newsletter-desc">Sé el primero en enterarte de nuestras promociones exclusivas.</p>
+            </div>
+          </div>
+
+          <form class="newsletter-form" id="newsletterForm">
+            <div class="newsletter-input-wrap">
+              <svg class="mail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              <input 
+                type="email" 
+                id="newsletterEmail" 
+                class="newsletter-input" 
+                placeholder="Tu correo electrónico" 
+                required
+              >
+            </div>
+            <button type="submit" class="btn btn-primary newsletter-submit-btn">
+              Suscribirme
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 16. FOOTER (Image 4) -->
+  <footer class="site-footer">
+    <div class="container footer-main-grid">
+      <!-- Col 1: Brand & Socials -->
+      <div class="footer-col brand-col">
+        <div class="brand-logo footer-logo">
+          <div class="logo-mark">
+            <span class="logo-bc font-white">BC</span>
+            <div class="logo-text-block">
+              <span class="logo-especial font-white">ESPECIAL</span>
+              <div class="logo-import-line">
+                <span class="line-rule rule-white"></span>
+                <span class="logo-import font-sky">IMPORT</span>
+                <span class="line-rule rule-white"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="footer-about-text">
+          Tu mundo, sin límites. Productos originales en tecnología, electrodomésticos, hogar y más, con garantía y envío a todo el país.
+        </p>
+        <div class="footer-social-links">
+          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="social-circle-link" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          </a>
+          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-circle-link" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+          </a>
+          <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" class="social-circle-link" aria-label="YouTube">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="#07162c"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Col 2: Navegación -->
+      <div class="footer-col">
+        <div class="footer-heading-wrap">
+          <span class="footer-col-title">NAVEGACIÓN</span>
+          <span class="footer-title-line"></span>
+        </div>
+        <ul class="footer-links-list">
+          <li><a href="#hero">Inicio</a></li>
+          <li><a href="#sobre-nosotros">Nosotros</a></li>
+          <li><a href="#destacados" data-category="ofertas">Ofertas</a></li>
+          <li><a href="#preguntas-frecuentes">Preguntas frecuentes</a></li>
+          <li><button class="footer-link-btn" id="openTermsBtn">Términos y condiciones</button></li>
+        </ul>
+      </div>
+
+      <!-- Col 3: Categorías -->
+      <div class="footer-col">
+        <div class="footer-heading-wrap">
+          <span class="footer-col-title">CATEGORÍAS</span>
+          <span class="footer-title-line"></span>
+        </div>
+        <ul class="footer-links-list">
+          <li><button class="footer-link-btn" data-category="electrodomesticos">Electrodomésticos</button></li>
+          <li><button class="footer-link-btn" data-category="tecnologia">Tecnología</button></li>
+          <li><button class="footer-link-btn" data-category="hogar">Hogar</button></li>
+          <li><button class="footer-link-btn" data-category="aire-libre">Aire Libre</button></li>
+          <li><button class="footer-link-btn" data-category="todos">Todas las categorías</button></li>
+        </ul>
+      </div>
+
+      <!-- Col 4: Contacto -->
+      <div class="footer-col">
+        <div class="footer-heading-wrap">
+          <span class="footer-col-title">CONTACTO</span>
+          <span class="footer-title-line"></span>
+        </div>
+        <div class="footer-contact-list">
+          <div class="contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            <div>
+              <span>Montevideo 1234,</span>
+              <span>CABA, Argentina</span>
+            </div>
+          </div>
+          <div class="contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <div>
+              <span class="contact-phone-text">11 1234-5678</span>
+              <span class="contact-hours-text">Lun a Vie de 9 a 18 hs</span>
+            </div>
+          </div>
+          <div class="contact-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            <span>info@bcespecialimport.com.ar</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Copyright -->
+    <div class="footer-bottom-bar">
+      <div class="container footer-bottom-inner">
+        <div>© 2024 BC Especial Import. Todos los derechos reservados.</div>
+        <div class="footer-legal-links">
+          <button class="legal-link-btn" id="legalTermsBtn">Términos y condiciones</button>
+          <span class="legal-sep">|</span>
+          <button class="legal-link-btn" id="legalPrivacyBtn">Política de privacidad</button>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================================== -->
+  <!-- MODALS & DRAWERS (INTERACTIVE E-COMMERCE LOGIC) -->
+  <!-- ============================================== -->
+
+  <!-- 1. SLIDE-OUT CART DRAWER -->
+  <div class="drawer-backdrop hidden" id="cartBackdrop"></div>
+  <aside class="cart-drawer hidden" id="cartDrawer" aria-label="Carrito de compras">
+    <div class="cart-drawer-header">
+      <div class="cart-drawer-title-row">
+        <div class="drawer-title-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+          <h3>Tu Carrito</h3>
+          <span class="drawer-counter-badge" id="drawerCartCount">0</span>
+        </div>
+        <button class="modal-close-btn" id="closeCartBtn" aria-label="Cerrar Carrito">✕</button>
+      </div>
+
+      <!-- Shipping Progress Bar -->
+      <div class="shipping-progress-container" id="shippingProgressContainer">
+        <div class="shipping-progress-text" id="shippingProgressText">
+          ¡Agregá $500.000 para obtener <strong>Envío Gratis</strong>!
+        </div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="shippingProgressBar" style="width: 0%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cart-drawer-body" id="cartDrawerBody">
+      <!-- Injected dynamically: items list or empty state -->
+    </div>
+
+    <div class="cart-drawer-footer" id="cartDrawerFooter">
+      <!-- Coupon Box -->
+      <div class="coupon-box">
+        <div class="coupon-input-group">
+          <input type="text" id="couponInput" placeholder="Código de descuento (ej: BC10)" autocomplete="off">
+          <button type="button" class="btn-sm btn-outline" id="applyCouponBtn">Aplicar</button>
+        </div>
+        <div class="coupon-applied-tag hidden" id="couponAppliedTag">
+          <span>Cupón <strong id="appliedCouponCode">BC10</strong> (-<span id="appliedCouponPercent">10</span>%)</span>
+          <button type="button" id="removeCouponBtn" class="tag-remove-btn">✕</button>
+        </div>
+      </div>
+
+      <!-- Price summary table -->
+      <div class="cart-summary-table">
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span id="cartSubtotalText">$ 0</span>
+        </div>
+        <div class="summary-row discount-row hidden" id="discountSummaryRow">
+          <span>Descuento</span>
+          <span class="discount-value" id="cartDiscountText">-$ 0</span>
+        </div>
+        <div class="summary-row">
+          <span>Envío</span>
+          <span class="shipping-value" id="cartShippingText">A calcular</span>
+        </div>
+        <div class="summary-row total-row">
+          <span>Total Estimado</span>
+          <span class="total-value" id="cartTotalText">$ 0</span>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-block checkout-trigger-btn" id="checkoutTriggerBtn">
+        <span>Iniciar Compra Segura</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </button>
+      <div class="secure-checkout-hint">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span>Transacciones encriptadas de extremo a extremo</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- 2. WISHLIST DRAWER -->
+  <div class="drawer-backdrop hidden" id="wishlistBackdrop"></div>
+  <aside class="cart-drawer hidden" id="wishlistDrawer" aria-label="Lista de Favoritos">
+    <div class="cart-drawer-header">
+      <div class="cart-drawer-title-row">
+        <div class="drawer-title-wrap">
+          <svg viewBox="0 0 24 24" fill="currentColor" class="text-red"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+          <h3>Tus Favoritos</h3>
+          <span class="drawer-counter-badge" id="drawerWishlistCount">0</span>
+        </div>
+        <button class="modal-close-btn" id="closeWishlistBtn" aria-label="Cerrar Favoritos">✕</button>
+      </div>
+    </div>
+    <div class="cart-drawer-body" id="wishlistDrawerBody">
+      <!-- Items dynamically populated -->
+    </div>
+  </aside>
+
+  <!-- 3. PRODUCT QUICK VIEW MODAL -->
+  <div class="modal-backdrop hidden" id="productModalBackdrop">
+    <div class="modal-container product-modal-container" role="dialog" aria-modal="true">
+      <button class="modal-close-btn modal-top-close" id="closeProductModalBtn" aria-label="Cerrar">✕</button>
+      <div class="product-modal-grid" id="productModalContent">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. MI CUENTA MODAL -->
+  <div class="modal-backdrop hidden" id="accountModalBackdrop">
+    <div class="modal-container account-modal-container" role="dialog" aria-modal="true">
+      <button class="modal-close-btn modal-top-close" id="closeAccountModalBtn" aria-label="Cerrar">✕</button>
+      <div class="account-modal-header">
+        <div class="account-tabs-header">
+          <button class="account-tab-btn active" id="tabLoginBtn">Iniciar Sesión</button>
+          <button class="account-tab-btn" id="tabRegisterBtn">Crear Cuenta</button>
+          <button class="account-tab-btn" id="tabOrdersBtn">Mis Pedidos</button>
+        </div>
+      </div>
+      <div class="account-modal-body" id="accountModalBody">
+        <!-- Rendered based on active tab -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. CHECKOUT MODAL (FULL STEP-BY-STEP CHECKOUT FLOW) -->
+  <div class="modal-backdrop hidden" id="checkoutModalBackdrop">
+    <div class="modal-container checkout-modal-container" role="dialog" aria-modal="true">
+      <button class="modal-close-btn modal-top-close" id="closeCheckoutModalBtn" aria-label="Cerrar">✕</button>
+      
+      <!-- Checkout Stepper Bar -->
+      <div class="checkout-stepper">
+        <div class="step-item active" id="stepIndicator1">
+          <span class="step-num">1</span>
+          <span class="step-name">Datos y Envío</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item" id="stepIndicator2">
+          <span class="step-num">2</span>
+          <span class="step-name">Pago</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item" id="stepIndicator3">
+          <span class="step-num">3</span>
+          <span class="step-name">Confirmación</span>
+        </div>
+      </div>
+
+      <div class="checkout-modal-body" id="checkoutModalBody">
+        <!-- Step 1 & 2 forms injected via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. SOBRE NOSOTROS / CONOCENOS MODAL -->
+  <div class="modal-backdrop hidden" id="aboutModalBackdrop">
+    <div class="modal-container about-info-modal" role="dialog" aria-modal="true">
+      <button class="modal-close-btn modal-top-close" id="closeAboutModalBtn" aria-label="Cerrar">✕</button>
+      <div class="about-modal-inner">
+        <div class="about-modal-header-hero">
+          <img src="/images/store_front_facade.jpg" alt="Showroom BC Especial Import" class="about-modal-hero-img">
+          <div class="about-modal-hero-overlay">
+            <span class="modal-hero-tag">BC ESPECIAL IMPORT</span>
+            <h2>Pasión por la tecnología y la confianza</h2>
+          </div>
+        </div>
+        <div class="about-modal-content">
+          <h3>Nuestra Historia & Compromiso</h3>
+          <p>
+            Fundada con la misión de acercar a toda la Argentina los productos más innovadores del mercado global, 
+            <strong>BC Especial Import</strong> se ha consolidado como un referente indiscutido en electrodomésticos de alta gama, 
+            tecnología de vanguardia, equipamiento de confort para el hogar y aventura al aire libre.
+          </p>
+          <div class="about-features-grid">
+            <div class="feat-card">
+              <h4>Garantía Oficial Certificada</h4>
+              <p>Cada producto cuenta con estampilla de importación legal y respaldo directo de 12 a 24 meses.</p>
+            </div>
+            <div class="feat-card">
+              <h4>Logística Nacional Blindada</h4>
+              <p>Flota y convenios prioritarios con Andreani para asegurar que tu compra llegue intacta y a tiempo.</p>
+            </div>
+            <div class="feat-card">
+              <h4>Showroom en CABA</h4>
+              <p>Podes visitarnos personalmente en Montevideo 1234, Ciudad Autónoma de Buenos Aires.</p>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-block" id="aboutModalCloseOkBtn">Entendido, seguir comprando</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. WHATSAPP CHAT SIMULATOR MODAL -->
+  <div class="modal-backdrop hidden" id="whatsappModalBackdrop">
+    <div class="modal-container whatsapp-modal-container" role="dialog" aria-modal="true">
+      <div class="whatsapp-chat-header">
+        <div class="whatsapp-user-status">
+          <div class="wa-avatar">BC</div>
+          <div>
+            <h4>BC Especial Import - Asesor</h4>
+            <span class="wa-online-tag">● En línea</span>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="closeWhatsappModalBtn" aria-label="Cerrar WhatsApp">✕</button>
+      </div>
+      <div class="whatsapp-chat-messages" id="whatsappMessages">
+        <div class="wa-bubble incoming">
+          ¡Hola! 👋 Bienvenido a BC Especial Import. ¿En qué podemos ayudarte hoy? ¿Consultas por algún producto en particular o envíos?
+          <span class="wa-time">Ahora</span>
+        </div>
+      </div>
+      <form class="whatsapp-chat-input-bar" id="whatsappChatForm">
+        <input type="text" id="whatsappInput" placeholder="Escribe un mensaje..." required autocomplete="off">
+        <button type="submit" class="wa-send-btn" aria-label="Enviar mensaje">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 8. FLOATING WHATSAPP BUTTON (LOWER RIGHT) -->
+  <button class="floating-whatsapp-widget" id="floatingWhatsappBtn" aria-label="Chatear por WhatsApp">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm5.78 14.12c-.24.68-1.21 1.27-1.74 1.34-.48.06-1.07.09-3.23-.81-2.58-1.07-4.22-3.69-4.35-3.86-.13-.17-1.04-1.38-1.04-2.64 0-1.25.66-1.87.9-2.12.23-.25.52-.31.69-.31.17 0 .35 0 .5.01.16.01.38-.06.59.45.22.53.75 1.83.82 1.96.07.14.12.3.02.48-.09.18-.14.29-.28.45-.14.16-.3.35-.43.47-.14.14-.29.29-.12.58.17.29.74 1.22 1.6 1.98 1.1 0.98 2.03 1.29 2.32 1.43.29.14.46.12.63-.08.17-.2.74-.86.94-1.16.2-.29.4-.24.68-.14.28.1 1.79.84 2.1 1 .31.15.52.23.59.36.07.13.07.76-.17 1.44z"/></svg>
+    <span class="floating-tooltip">¿Te ayudamos?</span>
+  </button>
+
+  <!-- 9. TOAST NOTIFICATION CONTAINER -->
+  <div class="toast-notifications-container" id="toastContainer"></div>
+
+  <!-- MAIN SCRIPT -->
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
