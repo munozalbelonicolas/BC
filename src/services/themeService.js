@@ -23,6 +23,12 @@ class ThemeService {
     return 'light';
   }
 
+  init() {
+    this.theme = this.detectInitialTheme();
+    this.applyTheme(this.theme);
+    return this.theme;
+  }
+
   getTheme() {
     return this.theme;
   }

@@ -36,7 +36,11 @@ class CustomerAccountApp {
     }
 
     // Initialize theme system (light / dark)
-    themeService.init();
+    try {
+      themeService.init();
+    } catch (e) {
+      console.warn('Theme init warning:', e);
+    }
 
     // Subscribe to auth state changes
     customerAuthService.subscribe((profile) => {
