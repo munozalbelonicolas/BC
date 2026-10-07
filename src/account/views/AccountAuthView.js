@@ -262,18 +262,40 @@ export class AccountAuthView {
     }
 
     // Social buttons
+    const handleSocialAuth = async (provider, btn) => {
+      const origContent = btn.innerHTML;
+      try {
+        btn.disabled = true;
+        btn.innerHTML = `<span class="account-spinner" style="width:14px;height:14px;display:inline-block;margin-right:6px;vertical-align:middle;"></span> Conectando...`;
+        
+        const res = await customerAuthService.signInWithOAuth(provider);
+        if (res?.redirecting) {
+          return;
+        }
+
+        if (res?.success && res.profile) {
+          accountToast.success(`¡Bienvenido, ${res.profile.name}! Sesión iniciada con ${res.provider || provider}.`);
+          if (this.onAuthSuccess) {
+            this.onAuthSuccess(res.profile);
+          }
+        }
+      } catch (err) {
+        console.error(`Error al iniciar sesión con ${provider}:`, err);
+        accountToast.error(err.message || `No se pudo iniciar sesión con ${provider}`);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = origContent;
+      }
+    };
+
     const googleBtn = container.querySelector('#social-google-btn');
     if (googleBtn) {
-      googleBtn.addEventListener('click', () => {
-        accountToast.info('Inicio con Google preparado. En modo demo podés ingresar directamente con el formulario.');
-      });
+      googleBtn.addEventListener('click', () => handleSocialAuth('google', googleBtn));
     }
 
     const appleBtn = container.querySelector('#social-apple-btn');
     if (appleBtn) {
-      appleBtn.addEventListener('click', () => {
-        accountToast.info('Inicio con Apple preparado. En modo demo podés ingresar directamente con el formulario.');
-      });
+      appleBtn.addEventListener('click', () => handleSocialAuth('apple', appleBtn));
     }
 
     // Re-send verification

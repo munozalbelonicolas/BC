@@ -49,6 +49,13 @@ class CustomerAccountApp {
       }
     });
 
+    // Check for returning OAuth session or active session
+    try {
+      await customerAuthService.checkOAuthSession();
+    } catch (e) {
+      console.warn('OAuth session check notice:', e);
+    }
+
     // Check if authenticated
     if (!customerAuthService.isAuthenticated()) {
       this.renderAuth();

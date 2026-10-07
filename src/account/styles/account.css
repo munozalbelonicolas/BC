@@ -1377,7 +1377,14 @@ button, input, select, textarea {
   animation: spin 0.8s linear infinite;
 }
 
+.account-btn-outline .account-spinner,
+.social-auth-btn .account-spinner {
+  border-color: rgba(100, 116, 139, 0.3);
+  border-top-color: var(--color-customer-primary, #0A2540);
+}
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
 

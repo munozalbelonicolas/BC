@@ -246,3 +246,25 @@ export async function signOutUser() {
     return { success: false, error: err.message };
   }
 }
+
+/**
+ * Supabase Auth: Sign In with OAuth provider
+ */
+export async function signInWithOAuthUser(provider = 'google', redirectTo = '') {
+  if (!isSupabaseConfigured || !supabase) {
+    return { success: false, error: 'Servicio de autenticación no disponible.' };
+  }
+
+  try {
+    const options = {};
+    if (redirectTo) options.redirectTo = redirectTo;
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options
+    });
+    if (error) throw error;
+    return { success: true, data };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+}

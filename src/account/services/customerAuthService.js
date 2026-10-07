@@ -15,10 +15,12 @@ class CustomerAuthService {
   }
 
   loadLocalProfile() {
-    try {
-      const stored = localStorage.getItem(`${this.storageKey}_${environment.current}`);
-      if (stored) return JSON.parse(stored);
-    } catch {}
+    if (typeof localStorage !== 'undefined') {
+      try {
+        const stored = localStorage.getItem(`${this.storageKey}_${environment.current}`);
+        if (stored) return JSON.parse(stored);
+      } catch {}
+    }
 
     // In demo mode only, provide an isolated demo customer
     if (environment.isDemo) {
@@ -44,10 +46,12 @@ class CustomerAuthService {
   saveProfile(profile) {
     this.currentProfile = profile;
     const key = `${this.storageKey}_${environment.current}`;
-    if (profile) {
-      localStorage.setItem(key, JSON.stringify(profile));
-    } else {
-      localStorage.removeItem(key);
+    if (typeof localStorage !== 'undefined') {
+      if (profile) {
+        localStorage.setItem(key, JSON.stringify(profile));
+      } else {
+        localStorage.removeItem(key);
+      }
     }
     this.notify();
   }
@@ -105,6 +109,99 @@ class CustomerAuthService {
     };
     this.saveProfile(profile);
     return { success: true, profile };
+  }
+
+  async signInWithOAuth(provider = 'google') {
+    const providerKey = (provider || 'google').toLowerCase();
+    const providerName = providerKey === 'google' ? 'Google' : 'Apple';
+
+    // 1. Supabase OAuth attempt
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const redirectTo = `${window.location.origin}/cuenta.html`;
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: providerKey,
+          options: { redirectTo }
+        });
+
+        if (error) {
+          if (environment.isProduction) {
+            throw new Error(`Error al conectar con ${providerName}: ${error.message}`);
+          }
+          console.warn(`[OAuth] Supabase aviso para ${providerName}:`, error.message);
+        } else if (data?.url) {
+          // In production: navigate to the OAuth authorize URL
+          if (environment.isProduction) {
+            window.location.href = data.url;
+            return { redirecting: true };
+          }
+        }
+      } catch (err) {
+        if (environment.isProduction) {
+          throw err;
+        }
+        console.warn(`[OAuth] Error intentando Supabase ${providerName}:`, err.message);
+      }
+    }
+
+    if (environment.isProduction) {
+      throw new Error(`Para iniciar sesión con ${providerName} en producción, asegurate de activar el proveedor en Supabase Auth.`);
+    }
+
+    // 2. Demo / Development authentication
+    const email = providerKey === 'google' ? 'munozalbelonicolas@gmail.com' : 'cliente.demo@icloud.com';
+    const profile = {
+      id: `usr_${providerKey}_${Date.now()}`,
+      name: providerKey === 'google' ? 'Nicolás' : 'Cliente',
+      lastName: providerKey === 'google' ? 'Muñoz' : 'Apple',
+      email: email,
+      phone: '+54 11 4455-8899',
+      documentId: '32.456.789',
+      birthDate: '1992-06-15',
+      role: 'admin',
+      createdAt: new Date().toISOString(),
+      avatar: providerKey === 'google'
+        ? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'
+        : 'https://ui-avatars.com/api/?name=Apple+User&background=000&color=fff',
+      authProvider: providerKey,
+      dataEnvironment: environment.dataEnvironment
+    };
+
+    this.saveProfile(profile);
+    return { success: true, profile, provider: providerName };
+  }
+
+  async checkOAuthSession() {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (!error && data?.session?.user) {
+          const user = data.session.user;
+          const fullName = user.user_metadata?.full_name || user.user_metadata?.name || '';
+          const parts = fullName.trim().split(' ');
+          const name = parts[0] || user.email?.split('@')[0] || 'Cliente';
+          const lastName = parts.slice(1).join(' ') || '';
+          
+          const profile = {
+            id: user.id,
+            name,
+            lastName,
+            email: user.email,
+            phone: user.phone || user.user_metadata?.phone || '',
+            documentId: '',
+            createdAt: user.created_at,
+            avatar: user.user_metadata?.avatar_url || user.user_metadata?.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}+${encodeURIComponent(lastName)}&background=0A2540&color=fff`,
+            authProvider: user.app_metadata?.provider || 'oauth',
+            dataEnvironment: environment.dataEnvironment
+          };
+          this.saveProfile(profile);
+          return profile;
+        }
+      } catch (err) {
+        console.warn('[OAuth] Error comprobando sesión:', err);
+      }
+    }
+    return this.getCurrentCustomer();
   }
 
   async signUp(name, lastName, email, password) {
