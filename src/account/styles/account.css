@@ -126,9 +126,29 @@ button, input, select, textarea {
   color: var(--acc-text);
 }
 
-.portal-brand img {
+.portal-brand img,
+.portal-brand-logo {
   height: 34px;
+  width: auto;
+  max-width: 170px;
   object-fit: contain;
+  display: block;
+}
+
+.portal-brand-logo.dark-logo {
+  display: none;
+}
+
+.portal-brand-logo.light-logo {
+  display: block;
+}
+
+[data-theme="dark"] .portal-brand-logo.dark-logo {
+  display: block;
+}
+
+[data-theme="dark"] .portal-brand-logo.light-logo {
+  display: none;
 }
 
 .portal-brand-text {
@@ -1030,7 +1050,53 @@ button, input, select, textarea {
 
 .auth-logo-img {
   height: 38px;
+  width: auto;
+  max-width: 180px;
   object-fit: contain;
+  display: block;
+}
+
+.auth-logo-img.dark-logo {
+  display: none;
+}
+
+.auth-logo-img.light-logo {
+  display: block;
+}
+
+[data-theme="dark"] .auth-logo-img.dark-logo {
+  display: block;
+}
+
+[data-theme="dark"] .auth-logo-img.light-logo {
+  display: none;
+}
+
+.portal-sidebar-footer-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 14px;
+  padding-top: 10px;
+  font-size: 11px;
+  color: var(--acc-muted);
+  user-select: none;
+}
+
+.portal-nilotech-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 700;
+  color: var(--acc-text);
+}
+
+.portal-nilotech-logo {
+  height: 14px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 3px rgba(234, 179, 8, 0.3));
 }
 
 .auth-back-store-link {

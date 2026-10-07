@@ -53,9 +53,9 @@ export class AccountLayout {
       <header class="portal-header">
         <div class="portal-header-inner">
           <div style="display:flex; align-items:center; gap:16px;">
-            <a href="/" class="portal-brand">
-              <img src="/images/logo-transparent.png" alt="BC Especial Import" />
-              <span class="portal-brand-text">BC IMPORT</span>
+            <a href="/" class="portal-brand" title="Ir a la tienda">
+              <img src="/images/logo-bc-claro.png" alt="BC Especial Import" class="portal-brand-logo light-logo" />
+              <img src="/images/logo-bc-oscuro.png" alt="BC Especial Import" class="portal-brand-logo dark-logo" />
             </a>
             <span class="portal-brand-badge">Mi Cuenta</span>
           </div>
@@ -140,6 +140,13 @@ export class AccountLayout {
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
               <span>Cerrar Sesión</span>
             </button>
+            <div class="portal-sidebar-footer-brand">
+              <span class="portal-powered-label">Powered by</span>
+              <div class="portal-nilotech-brand">
+                <img src="/images/logo-nilo.png" alt="Nilotech" class="portal-nilotech-logo" />
+                <span>Nilotech</span>
+              </div>
+            </div>
           </div>
         </aside>
 

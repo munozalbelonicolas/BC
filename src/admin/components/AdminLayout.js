@@ -171,8 +171,7 @@ export class AdminLayout {
         <aside class="admin-sidebar ${this.isSidebarOpenMobile ? 'open' : ''}" id="admin-sidebar">
           <div class="sidebar-header">
             <a href="#dashboard" class="sidebar-brand">
-              <img src="/images/logo-transparent.png" alt="BC Logo" />
-              <div class="sidebar-brand-text">BC IMPORT</div>
+              <img src="/images/logo-bc-oscuro.png" alt="BC Especial Import" />
             </a>
             <span class="sidebar-brand-badge">PRO</span>
           </div>
@@ -201,6 +200,14 @@ export class AdminLayout {
             <a href="/" target="_blank" title="Ver Tienda" style="color:#94a3b8; display:flex; align-items:center;">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             </a>
+          </div>
+
+          <div class="sidebar-powered">
+            <span class="sidebar-powered-label">Powered by</span>
+            <div class="sidebar-nilotech-brand">
+              <img src="/images/logo-nilo.png" alt="Nilotech" class="sidebar-nilotech-logo" />
+              <span>Nilotech</span>
+            </div>
           </div>
         </aside>
 

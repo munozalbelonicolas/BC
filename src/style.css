@@ -1988,6 +1988,49 @@ ul {
   gap: 12px;
 }
 
+/* Powered by Nilotech */
+.powered-by-nilotech {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: #94a3b8;
+  user-select: none;
+}
+
+.powered-by-nilotech .powered-by-label {
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.nilotech-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.nilotech-brand:hover {
+  transform: translateY(-1px);
+}
+
+.nilotech-logo-img {
+  height: 20px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 2px 5px rgba(234, 179, 8, 0.3));
+}
+
+.nilotech-name {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.86rem;
+  letter-spacing: 0.02em;
+}
+
 .legal-link-btn {
   font-size: 0.82rem;
   color: #64748b;

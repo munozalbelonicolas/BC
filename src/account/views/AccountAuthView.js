@@ -200,7 +200,8 @@ export class AccountAuthView {
       <div class="auth-container">
         <div class="auth-brand-bar">
           <a href="/" class="auth-logo-link">
-            <img src="/images/logo-transparent.png" alt="BC Especial Import" class="auth-logo-img" onerror="this.src='/images/logo.png'"/>
+            <img src="/images/logo-bc-claro.png" alt="BC Especial Import" class="auth-logo-img light-logo" />
+            <img src="/images/logo-bc-oscuro.png" alt="BC Especial Import" class="auth-logo-img dark-logo" />
           </a>
           <a href="/" class="auth-back-store-link">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
@@ -214,6 +215,13 @@ export class AccountAuthView {
 
         <div class="auth-footer-help">
           <p>¿Tenés problemas para ingresar? <a href="https://wa.me/5491112345678" target="_blank" rel="noopener">Contactar soporte técnico</a></p>
+          <div class="portal-sidebar-footer-brand" style="margin-top:12px;">
+            <span class="portal-powered-label">Powered by</span>
+            <div class="portal-nilotech-brand">
+              <img src="/images/logo-nilo.png" alt="Nilotech" class="portal-nilotech-logo" />
+              <span>Nilotech</span>
+            </div>
+          </div>
         </div>
       </div>
     `;
