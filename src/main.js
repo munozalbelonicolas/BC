@@ -1177,13 +1177,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('closeWishlistBtn')?.addEventListener('click', closeWishlistDrawer);
   document.getElementById('wishlistBackdrop')?.addEventListener('click', closeWishlistDrawer);
 
-  // Mi cuenta
+  // Mi cuenta - Navigates directly to Customer Account Portal
   const accountBtn = document.getElementById('accountBtn');
   const accountModal = document.getElementById('accountModalBackdrop');
   accountBtn?.addEventListener('click', () => {
-    accountActiveTab = store.user ? 'orders' : 'login';
-    renderAccountBody();
-    accountModal?.classList.remove('hidden');
+    window.location.href = '/cuenta.html';
   });
   document.getElementById('closeAccountModalBtn')?.addEventListener('click', () => {
     accountModal?.classList.add('hidden');
