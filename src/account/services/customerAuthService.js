@@ -12,6 +12,41 @@ class CustomerAuthService {
     this.storageKey = 'bc_customer_session_v2';
     this.currentProfile = this.loadLocalProfile();
     this.listeners = new Set();
+    this.initSupabaseListener();
+  }
+
+  initSupabaseListener() {
+    if (isSupabaseConfigured && supabase?.auth?.onAuthStateChange) {
+      try {
+        supabase.auth.onAuthStateChange((event, session) => {
+          if (session?.user && (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'INITIAL_SESSION')) {
+            const user = session.user;
+            const fullName = user.user_metadata?.full_name || user.user_metadata?.name || '';
+            const parts = fullName.trim().split(' ');
+            const name = parts[0] || user.email?.split('@')[0] || 'Cliente';
+            const lastName = parts.slice(1).join(' ') || '';
+
+            const profile = {
+              id: user.id,
+              name,
+              lastName,
+              email: user.email,
+              phone: user.phone || user.user_metadata?.phone || '',
+              documentId: '',
+              createdAt: user.created_at,
+              avatar: user.user_metadata?.avatar_url || user.user_metadata?.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}+${encodeURIComponent(lastName)}&background=0A2540&color=fff`,
+              authProvider: user.app_metadata?.provider || 'oauth',
+              dataEnvironment: environment.dataEnvironment
+            };
+            this.saveProfile(profile);
+          } else if (event === 'SIGNED_OUT') {
+            this.saveProfile(null);
+          }
+        });
+      } catch (e) {
+        console.warn('[AuthService] onAuthStateChange warning:', e);
+      }
+    }
   }
 
   loadLocalProfile() {
@@ -94,58 +129,53 @@ class CustomerAuthService {
     return { success: true, profile };
   }
 
-  async signInWithOAuth(provider = 'google', customUser = null) {
+  async signInWithOAuth(provider = 'google') {
     const providerKey = (provider || 'google').toLowerCase();
     const providerName = providerKey === 'google' ? 'Google' : 'Apple';
 
-    // 1. If explicit user info is provided, create and activate their personal session
-    if (customUser && customUser.email) {
-      const email = customUser.email.trim().toLowerCase();
-      const nameParts = (customUser.name || '').trim().split(' ');
-      const firstName = nameParts[0] || email.split('@')[0];
-      const lastName = nameParts.slice(1).join(' ') || (customUser.lastName || '');
-
-      const profile = {
-        id: `usr_${providerKey}_${Date.now()}`,
-        name: firstName,
-        lastName: lastName,
-        email: email,
-        phone: customUser.phone || '',
-        documentId: '',
-        role: customUser.role || (email.includes('admin') ? 'admin' : 'customer'),
-        createdAt: new Date().toISOString(),
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}+${encodeURIComponent(lastName || firstName)}&background=0A2540&color=fff`,
-        authProvider: providerKey,
-        dataEnvironment: environment.dataEnvironment
-      };
-
-      this.saveProfile(profile);
-      return { success: true, profile, provider: providerName };
+    if (!isSupabaseConfigured || !supabase) {
+      throw new Error(`La autenticación con ${providerName} requiere la configuración activa de Supabase.`);
     }
 
-    // 2. Attempt Supabase OAuth redirect if configured
-    if (isSupabaseConfigured && supabase) {
-      try {
-        const redirectTo = `${window.location.origin}/cuenta.html`;
-        const { data, error } = await supabase.auth.signInWithOAuth({
-          provider: providerKey,
-          options: { redirectTo }
-        });
-
-        if (!error && data?.url) {
-          window.location.href = data.url;
-          return { redirecting: true };
-        }
-        if (error) {
-          console.warn(`[OAuth] Supabase aviso para ${providerName}:`, error.message);
-        }
-      } catch (err) {
-        console.warn(`[OAuth] Error intentando Supabase ${providerName}:`, err.message);
+    const redirectTo = `${window.location.origin}/cuenta.html`;
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: providerKey,
+      options: {
+        redirectTo,
+        skipBrowserRedirect: true
       }
+    });
+
+    if (error) {
+      if (error.message?.includes('provider is not enabled') || error.message?.includes('validation_failed')) {
+        throw new Error(`El proveedor ${providerName} no está activado en tu panel de Supabase. Activá ${providerName} en Supabase (Authentication > Providers > ${providerName}) con tus credenciales de Google Cloud.`);
+      }
+      throw new Error(error.message || `No se pudo conectar con ${providerName}.`);
     }
 
-    // 3. If Supabase OAuth is not active and no customUser was given, request user details
-    return { prompt_required: true, provider: providerName };
+    if (!data?.url) {
+      throw new Error(`No se pudo obtener la URL de autorización para ${providerName}.`);
+    }
+
+    // Comprobar si el backend de Supabase tiene habilitado el proveedor antes de redirigir
+    try {
+      const probe = await fetch(data.url, { method: 'GET', redirect: 'manual' });
+      if (probe.status === 400) {
+        const body = await probe.json().catch(() => ({}));
+        if (body?.msg?.includes('provider is not enabled') || body?.error_code === 'validation_failed') {
+          throw new Error(`Google OAuth no está habilitado en tu panel de Supabase. Para usar el login real de Google, debés activar Google en Supabase (Authentication > Providers > Google) agregando tu Client ID y Client Secret.`);
+        }
+      }
+    } catch (probeErr) {
+      if (probeErr.message?.includes('Google OAuth no está habilitado') || probeErr.message?.includes('Supabase')) {
+        throw probeErr;
+      }
+      // Si la llamada fetch es bloqueada por CORS o red, continuar con la redirección directa del navegador
+    }
+
+    // Redirección real al proveedor OAuth (Google / Apple)
+    window.location.href = data.url;
+    return { redirecting: true };
   }
 
   async checkOAuthSession() {
