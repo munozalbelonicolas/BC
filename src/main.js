@@ -1,8 +1,9 @@
-import { PRODUCTS, CATEGORIES, FAQS, TESTIMONIALS } from './data/products.js';
 import { store } from './state.js';
 import { themeService } from './services/themeService.js';
+import { environment } from './core/environment.js';
 import { 
   getProducts, 
+  getFaqs,
   saveOrderToSupabase, 
   subscribeNewsletterToSupabase, 
   signInUser, 
@@ -13,7 +14,7 @@ import {
 // Initialize light/dark theme system
 themeService.init();
 
-let currentProducts = PRODUCTS;
+let currentProducts = [];
 
 // Utility: format Argentine Peso currency
 function formatARS(amount) {
@@ -999,11 +1000,17 @@ function renderAccountBody() {
 /* ===================================================================
    FAQ ACCORDION & STATIC SECTIONS
    =================================================================== */
-function setupFaqs() {
+async function setupFaqs() {
   const container = document.getElementById('faqAccordion');
   if (!container) return;
 
-  container.innerHTML = FAQS.map((faq, index) => `
+  const faqs = await getFaqs();
+  if (!faqs || faqs.length === 0) {
+    container.innerHTML = '<p style="color:#64748b; font-size:14px; text-align:center; padding:20px;">Preguntas frecuentes disponibles al iniciar sesión con la base de datos.</p>';
+    return;
+  }
+
+  container.innerHTML = faqs.map((faq, index) => `
     <div class="accordion-item ${index === 0 ? 'open' : ''}">
       <button class="accordion-trigger" aria-expanded="${index === 0}">
         <span>${faq.question}</span>
@@ -1072,6 +1079,19 @@ function setupWhatsappChat() {
    EVENT LISTENERS INITIALIZATION
    =================================================================== */
 document.addEventListener('DOMContentLoaded', () => {
+  // Demo mode indicator
+  if (environment.isDemo) {
+    const demoBanner = document.createElement('div');
+    demoBanner.className = 'demo-environment-indicator-bar';
+    demoBanner.innerHTML = `
+      <div style="background:linear-gradient(90deg, #f59e0b 0%, #d97706 100%); color:#ffffff; padding:6px 16px; text-align:center; font-size:12px; font-weight:700; letter-spacing:0.02em; display:flex; align-items:center; justify-content:center; gap:8px; z-index:99999; position:relative;">
+        <span>🧪</span>
+        <span>MODO DEMOSTRACIÓN ACTIVO — Navegando con datos de demostración aislados (data_environment: "demo"). No impacta en producción.</span>
+      </div>
+    `;
+    document.body.prepend(demoBanner);
+  }
+
   // 1. Initial renders
   renderCatalog();
   updateCartUI();
@@ -1081,13 +1101,12 @@ document.addEventListener('DOMContentLoaded', () => {
   setupFaqs();
   setupWhatsappChat();
 
-  // Fetch live products from Supabase (with automatic fallback)
+  // Fetch live products from Supabase/Data Layer for current data_environment
   getProducts().then(prods => {
-    if (prods && prods.length > 0) {
-      currentProducts = prods;
-      renderCatalog();
-      updateWishlistUI();
-    }
+    currentProducts = prods || [];
+    store.setCatalog(currentProducts);
+    renderCatalog();
+    updateWishlistUI();
   });
 
   // Subscribe state changes

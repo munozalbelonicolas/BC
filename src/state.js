@@ -1,13 +1,16 @@
-import { PRODUCTS } from './data/products.js';
+import { environment } from './core/environment.js';
 
-// LocalStorage keys
-const CART_STORAGE_KEY = 'bc_cart_v1';
-const WISHLIST_STORAGE_KEY = 'bc_wishlist_v1';
-const USER_STORAGE_KEY = 'bc_user_v1';
-const ORDERS_STORAGE_KEY = 'bc_orders_v1';
+// LocalStorage keys segregated by environment
+const getStorageKey = (base) => `${base}_${environment.current}`;
+
+const CART_STORAGE_KEY = 'bc_cart_v2';
+const WISHLIST_STORAGE_KEY = 'bc_wishlist_v2';
+const USER_STORAGE_KEY = 'bc_user_v2';
+const ORDERS_STORAGE_KEY = 'bc_orders_v2';
 
 class Store {
   constructor() {
+    this.catalog = [];
     this.cart = this.loadCart();
     this.wishlist = this.loadWishlist();
     this.user = this.loadUser();
@@ -20,9 +23,14 @@ class Store {
     this.listeners = new Set();
   }
 
+  setCatalog(products) {
+    this.catalog = Array.isArray(products) ? products : [];
+    this.notify();
+  }
+
   loadCart() {
     try {
-      const data = localStorage.getItem(CART_STORAGE_KEY);
+      const data = localStorage.getItem(getStorageKey(CART_STORAGE_KEY));
       return data ? JSON.parse(data) : [];
     } catch {
       return [];
@@ -30,13 +38,13 @@ class Store {
   }
 
   saveCart() {
-    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(this.cart));
+    localStorage.setItem(getStorageKey(CART_STORAGE_KEY), JSON.stringify(this.cart));
     this.notify();
   }
 
   loadWishlist() {
     try {
-      const data = localStorage.getItem(WISHLIST_STORAGE_KEY);
+      const data = localStorage.getItem(getStorageKey(WISHLIST_STORAGE_KEY));
       return data ? JSON.parse(data) : [];
     } catch {
       return [];
@@ -44,13 +52,13 @@ class Store {
   }
 
   saveWishlist() {
-    localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(this.wishlist));
+    localStorage.setItem(getStorageKey(WISHLIST_STORAGE_KEY), JSON.stringify(this.wishlist));
     this.notify();
   }
 
   loadUser() {
     try {
-      const data = localStorage.getItem(USER_STORAGE_KEY);
+      const data = localStorage.getItem(getStorageKey(USER_STORAGE_KEY));
       return data ? JSON.parse(data) : null;
     } catch {
       return null;
@@ -60,36 +68,24 @@ class Store {
   saveUser(user) {
     this.user = user;
     if (user) {
-      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+      localStorage.setItem(getStorageKey(USER_STORAGE_KEY), JSON.stringify(user));
     } else {
-      localStorage.removeItem(USER_STORAGE_KEY);
+      localStorage.removeItem(getStorageKey(USER_STORAGE_KEY));
     }
     this.notify();
   }
 
   loadOrders() {
     try {
-      const data = localStorage.getItem(ORDERS_STORAGE_KEY);
-      return data ? JSON.parse(data) : [
-        {
-          id: "BC-78942",
-          date: "02/10/2026",
-          items: [
-            { id: "apple-iphone-15-128gb", name: "iPhone 15 128GB 5G", qty: 1, price: 1399000, image: "/images/iphone-15.jpg" }
-          ],
-          total: 1399000,
-          status: "En camino",
-          trackingCode: "AND-92847102-AR",
-          carrier: "Andreani Express"
-        }
-      ];
+      const data = localStorage.getItem(getStorageKey(ORDERS_STORAGE_KEY));
+      return data ? JSON.parse(data) : [];
     } catch {
       return [];
     }
   }
 
   saveOrders() {
-    localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(this.orders));
+    localStorage.setItem(getStorageKey(ORDERS_STORAGE_KEY), JSON.stringify(this.orders));
     this.notify();
   }
 
@@ -103,8 +99,8 @@ class Store {
   }
 
   // Cart operations
-  addToCart(productId, quantity = 1) {
-    const product = PRODUCTS.find(p => p.id === productId);
+  addToCart(productId, quantity = 1, productData = null) {
+    const product = productData || this.catalog.find(p => p.id === productId);
     if (!product) return false;
 
     const existingIndex = this.cart.findIndex(item => item.id === productId);
@@ -117,8 +113,9 @@ class Store {
         price: product.price,
         image: product.image,
         brand: product.brand,
-        specsSummary: product.specsSummary,
-        quantity: quantity
+        specsSummary: product.specsSummary || product.shortDescription,
+        quantity: quantity,
+        dataEnvironment: product.dataEnvironment || environment.dataEnvironment
       });
     }
 
@@ -237,7 +234,8 @@ class Store {
       trackingCode: `AND-${Math.floor(10000000 + Math.random() * 90000000)}-AR`,
       carrier: orderData.shippingType === 'sucursal' ? 'Retiro en Showroom CABA' : 'Andreani Express',
       customer: orderData.customer,
-      paymentMethod: orderData.paymentMethod
+      paymentMethod: orderData.paymentMethod,
+      dataEnvironment: environment.dataEnvironment
     };
 
     this.orders.unshift(newOrder);

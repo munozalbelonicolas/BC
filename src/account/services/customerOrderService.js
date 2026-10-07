@@ -6,7 +6,6 @@
 import { customerOrderRepo } from '../repositories/factory.js';
 import { customerAuthService } from './customerAuthService.js';
 import { store } from '../../state.js';
-import { PRODUCTS } from '../../data/products.js';
 
 export class CustomerOrderService {
   static async getOrders() {
@@ -35,7 +34,7 @@ export class CustomerOrderService {
 
     orderItems.forEach(item => {
       // Find current active product in live catalog
-      const liveProd = PRODUCTS.find(p => p.id === item.id || p.sku === item.sku);
+      const liveProd = (store.catalog || []).find(p => p.id === item.id || p.sku === item.sku);
 
       if (!liveProd) {
         unavailable.push(`${item.name} (Ya no se encuentra disponible en catálogo)`);

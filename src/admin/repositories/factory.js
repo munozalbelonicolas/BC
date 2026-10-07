@@ -2,9 +2,11 @@
  * @file factory.js
  * Dependency Injection & Repository Factory.
  * Resolves repository instances depending on environment variables and connection health.
+ * In PRODUCTION, mock repositories are strictly disabled.
  */
 
 import { isSupabaseConfigured } from '../../services/supabase.js';
+import { environment } from '../../core/environment.js';
 import {
   MockProductRepository,
   MockCategoryRepository,
@@ -28,6 +30,7 @@ import {
   SupabaseCustomerRepository,
   SupabasePromotionRepository,
   SupabaseCouponRepository,
+  SupabasePaymentRepository,
   SupabaseAdminUserRepository,
   SupabaseSettingsRepository,
   SupabaseAuditRepository
@@ -37,11 +40,34 @@ import { auditLogger } from '../core/audit.js';
 
 class RepositoryContainer {
   constructor() {
-    this.useMock = import.meta.env.VITE_USE_MOCK_DATA === 'true' || !isSupabaseConfigured;
     this.init();
   }
 
   init() {
+    // In production, mock data is TERMINANTEMENTE PROHIBIDO!
+    if (environment.isProduction) {
+      this.useMock = false;
+      this.productRepository = new SupabaseProductRepository();
+      this.categoryRepository = new SupabaseCategoryRepository();
+      this.brandRepository = new SupabaseBrandRepository();
+      this.inventoryRepository = new SupabaseInventoryRepository(this.productRepository);
+      this.orderRepository = new SupabaseOrderRepository();
+      this.customerRepository = new SupabaseCustomerRepository();
+      this.paymentRepository = new SupabasePaymentRepository();
+      this.promotionRepository = new SupabasePromotionRepository();
+      this.couponRepository = new SupabaseCouponRepository();
+      this.adminUserRepository = new SupabaseAdminUserRepository();
+      this.settingsRepository = new SupabaseSettingsRepository();
+      this.auditRepository = new SupabaseAuditRepository();
+      auditLogger.setRepository(this.auditRepository);
+      return;
+    }
+
+    // In non-production (development, demo, test):
+    // Use Supabase if configured, or isolated memory repositories for offline testing
+    const explicitMock = import.meta?.env?.VITE_USE_MOCK_DATA === 'true' || !isSupabaseConfigured;
+    this.useMock = explicitMock;
+
     if (this.useMock) {
       this.productRepository = new MockProductRepository();
       this.categoryRepository = new MockCategoryRepository();
@@ -49,6 +75,7 @@ class RepositoryContainer {
       this.inventoryRepository = new MockInventoryRepository(this.productRepository);
       this.orderRepository = new MockOrderRepository();
       this.customerRepository = new MockCustomerRepository();
+      this.paymentRepository = new SupabasePaymentRepository();
       this.promotionRepository = new MockPromotionRepository();
       this.couponRepository = new MockCouponRepository();
       this.adminUserRepository = new MockAdminUserRepository();
@@ -61,6 +88,7 @@ class RepositoryContainer {
       this.inventoryRepository = new SupabaseInventoryRepository(this.productRepository);
       this.orderRepository = new SupabaseOrderRepository();
       this.customerRepository = new SupabaseCustomerRepository();
+      this.paymentRepository = new SupabasePaymentRepository();
       this.promotionRepository = new SupabasePromotionRepository();
       this.couponRepository = new SupabaseCouponRepository();
       this.adminUserRepository = new SupabaseAdminUserRepository();
@@ -72,6 +100,7 @@ class RepositoryContainer {
   }
 
   isUsingMockData() {
+    if (environment.isProduction) return false;
     return this.useMock;
   }
 }
@@ -83,6 +112,7 @@ export const brandRepo = container.brandRepository;
 export const inventoryRepo = container.inventoryRepository;
 export const orderRepo = container.orderRepository;
 export const customerRepo = container.customerRepository;
+export const paymentRepo = container.paymentRepository;
 export const promotionRepo = container.promotionRepository;
 export const couponRepo = container.couponRepository;
 export const adminUserRepo = container.adminUserRepository;

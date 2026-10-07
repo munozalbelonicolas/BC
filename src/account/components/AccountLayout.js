@@ -6,6 +6,7 @@
 import { customerAuthService } from '../services/customerAuthService.js';
 import { themeService } from '../../services/themeService.js';
 import { store } from '../../state.js';
+import { environment } from '../../core/environment.js';
 
 export class AccountLayout {
   constructor(options = {}) {
@@ -58,6 +59,9 @@ export class AccountLayout {
               <img src="/images/logo-bc-oscuro.png" alt="BC Especial Import" class="portal-brand-logo dark-logo" />
             </a>
             <span class="portal-brand-badge">Mi Cuenta</span>
+            ${environment.isDemo ? `
+              <span style="background:rgba(245, 158, 11, 0.15); color:#d97706; border:1px solid rgba(245, 158, 11, 0.3); font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:9999px;" title="Operando con datos de demostración aislados">🧪 Modo Demo</span>
+            ` : ''}
           </div>
 
           <div class="portal-header-actions">

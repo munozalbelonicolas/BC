@@ -4,6 +4,7 @@
  */
 
 import { authorizer, ROLE_DEFINITIONS } from '../core/rbac.js';
+import { environment } from '../../core/environment.js';
 
 export class AdminLayout {
   constructor(options = {}) {
@@ -225,6 +226,12 @@ export class AdminLayout {
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
                 <span class="current">${currentTitle}</span>
               </nav>
+              ${environment.isDemo ? `
+                <span style="background:rgba(245, 158, 11, 0.15); color:#f59e0b; border:1px solid rgba(245, 158, 11, 0.35); font-size:11px; font-weight:700; padding:2px 8px; border-radius:9999px; display:inline-flex; align-items:center; gap:5px;" title="Operando con datos de demostración aislados (data_environment: demo)">
+                  <span>🧪</span>
+                  <span>Modo Demo</span>
+                </span>
+              ` : ''}
             </div>
 
             <div class="topbar-right">

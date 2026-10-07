@@ -1,33 +1,53 @@
 /**
  * @file customerAuthService.js
  * Customer session management, profile mutation, email verification flow, and account security.
+ * Segregated by environment with zero demo profile leakage into production.
  */
 
 import { supabase, isSupabaseConfigured, signOutUser } from '../../services/supabase.js';
-import { INITIAL_CUSTOMER_PROFILE } from '../repositories/mock/mockCustomerData.js';
+import { environment } from '../../core/environment.js';
 
 class CustomerAuthService {
   constructor() {
-    this.storageKey = 'bc_customer_session_v1';
+    this.storageKey = 'bc_customer_session_v2';
     this.currentProfile = this.loadLocalProfile();
     this.listeners = new Set();
   }
 
   loadLocalProfile() {
     try {
-      const stored = localStorage.getItem(this.storageKey);
+      const stored = localStorage.getItem(`${this.storageKey}_${environment.current}`);
       if (stored) return JSON.parse(stored);
     } catch {}
-    // Default demo customer profile
-    return { ...INITIAL_CUSTOMER_PROFILE };
+
+    // In demo mode only, provide an isolated demo customer
+    if (environment.isDemo) {
+      return {
+        id: 'cust-demo-5',
+        name: 'Nicolás',
+        lastName: 'Muñoz',
+        email: 'munozalbelonicolas@gmail.com',
+        phone: '+54 11 4455-8899',
+        documentId: '32.456.789',
+        birthDate: '1992-06-15',
+        role: 'admin',
+        createdAt: '2026-01-10T14:30:00Z',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
+        dataEnvironment: 'demo'
+      };
+    }
+
+    // In production: Strictly return null until user authenticates with real credentials!
+    return null;
   }
 
   saveProfile(profile) {
     this.currentProfile = profile;
+    const key = `${this.storageKey}_${environment.current}`;
     if (profile) {
-      localStorage.setItem(this.storageKey, JSON.stringify(profile));
+      localStorage.setItem(key, JSON.stringify(profile));
     } else {
-      localStorage.removeItem(this.storageKey);
+      localStorage.removeItem(key);
     }
     this.notify();
   }
@@ -50,24 +70,38 @@ class CustomerAuthService {
             name: data.user.user_metadata?.full_name?.split(' ')[0] || email.split('@')[0],
             lastName: data.user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '',
             email: data.user.email,
-            phone: data.user.phone || '+54 11 4455-8899',
-            documentId: '32.456.789',
+            phone: data.user.phone || '',
+            documentId: '',
             createdAt: data.user.created_at,
-            avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'
+            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(email)}&background=0A2540&color=fff`,
+            dataEnvironment: environment.dataEnvironment
           };
           this.saveProfile(profile);
           return { success: true, profile };
         }
+        if (error) throw error;
       } catch (err) {
-        console.warn('Supabase sign-in fallback:', err);
+        if (environment.isProduction) {
+          throw new Error(err.message || 'Credenciales inválidas.');
+        }
       }
     }
 
-    // Local / Mock login
+    if (environment.isProduction) {
+      throw new Error('No es posible iniciar sesión en producción sin credenciales válidas en la base de datos.');
+    }
+
+    // Demo/Development only login
     const profile = {
-      ...INITIAL_CUSTOMER_PROFILE,
+      id: `usr_${Date.now()}`,
+      name: email.split('@')[0].split('.')[0].replace(/^\w/, c => c.toUpperCase()),
+      lastName: 'Usuario',
       email,
-      name: email.split('@')[0].split('.')[0].replace(/^\w/, c => c.toUpperCase())
+      phone: '+54 11 0000-0000',
+      documentId: '00.000.000',
+      createdAt: new Date().toISOString(),
+      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(email)}&background=0A2540&color=fff`,
+      dataEnvironment: environment.dataEnvironment
     };
     this.saveProfile(profile);
     return { success: true, profile };
@@ -85,7 +119,8 @@ class CustomerAuthService {
           password,
           options: {
             data: {
-              full_name: `${name.trim()} ${lastName.trim()}`
+              full_name: `${name.trim()} ${lastName.trim()}`,
+              data_environment: environment.dataEnvironment
             }
           }
         });
@@ -100,7 +135,8 @@ class CustomerAuthService {
             phone: '',
             documentId: '',
             createdAt: data.user.created_at,
-            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}+${encodeURIComponent(lastName)}&background=0A2540&color=fff`
+            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}+${encodeURIComponent(lastName)}&background=0A2540&color=fff`,
+            dataEnvironment: environment.dataEnvironment
           };
           this.saveProfile(profile);
           return { success: true, profile, message: '¡Cuenta creada exitosamente!' };
@@ -111,13 +147,17 @@ class CustomerAuthService {
       }
     }
 
+    if (environment.isProduction) {
+      throw new Error('No es posible registrar usuarios en producción sin base de datos activa.');
+    }
+
     const profile = {
-      ...INITIAL_CUSTOMER_PROFILE,
       id: `usr_${Date.now()}`,
       name: name.trim(),
       lastName: lastName.trim(),
       email: email.trim().toLowerCase(),
-      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}+${encodeURIComponent(lastName)}&background=0A2540&color=fff`
+      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}+${encodeURIComponent(lastName)}&background=0A2540&color=fff`,
+      dataEnvironment: environment.dataEnvironment
     };
     this.saveProfile(profile);
     return { success: true, profile, message: '¡Cuenta creada exitosamente!' };
@@ -139,20 +179,17 @@ class CustomerAuthService {
       }
     }
 
-    // Generic safe response to prevent email enumeration
     return {
       success: true,
-      message: 'Si existe una cuenta asociada a este correo, te enviaremos instrucciones de recuperación en los próximos minutos.'
+      message: 'Si existe una cuenta asociada a este correo, te enviaremos instrucciones de recuperación.'
     };
   }
 
   async updateProfile(updates) {
     if (!this.currentProfile) throw new Error('No hay sesión activa');
 
-    // Validations
     if (!updates.name || !updates.name.trim()) throw new Error('El nombre no puede estar vacío');
     if (!updates.lastName || !updates.lastName.trim()) throw new Error('El apellido no puede estar vacío');
-    if (updates.phone && updates.phone.length < 8) throw new Error('Ingrese un número de teléfono válido');
 
     const updated = {
       ...this.currentProfile,
@@ -185,16 +222,15 @@ class CustomerAuthService {
       try {
         const { error } = await supabase.auth.updateUser({ email: newEmail });
         if (error) throw error;
-        return { success: true, message: `Se ha enviado un enlace de confirmación a ${newEmail}. Tu email se actualizará cuando hagas clic en el correo.` };
+        return { success: true, message: `Se ha enviado un enlace de confirmación a ${newEmail}.` };
       } catch (err) {
         throw new Error(err.message);
       }
     }
 
-    // Mock flow simulation
     return {
       success: true,
-      message: `Hemos enviado un código de verificación seguro a ${newEmail}. Por motivos de seguridad se requiere confirmación.`
+      message: `Código de confirmación enviado a ${newEmail}.`
     };
   }
 
@@ -226,7 +262,7 @@ class CustomerAuthService {
 
   async deleteAccount() {
     await this.signOut();
-    return { success: true, message: 'Tu cuenta ha sido desactivada y tus datos marcados para baja legal.' };
+    return { success: true, message: 'Tu cuenta ha sido desactivada correctamente.' };
   }
 
   subscribe(listener) {

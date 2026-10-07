@@ -1,9 +1,11 @@
 /**
  * @file factory.js
  * Dependency injection container for Customer Portal repositories.
+ * In PRODUCTION, mock repositories are strictly disabled.
  */
 
 import { isSupabaseConfigured } from '../../services/supabase.js';
+import { environment } from '../../core/environment.js';
 
 import {
   MockCustomerOrderRepository,
@@ -23,11 +25,24 @@ import {
 
 class CustomerContainer {
   constructor() {
-    this.useMock = import.meta.env.VITE_USE_MOCK_DATA === 'true' || !isSupabaseConfigured;
     this.init();
   }
 
   init() {
+    // In production, mock data is TERMINANTEMENTE PROHIBIDO!
+    if (environment.isProduction) {
+      this.useMock = false;
+      this.orderRepo = new SupabaseCustomerOrderRepository();
+      this.addressRepo = new SupabaseCustomerAddressRepository();
+      this.favoritesRepo = new SupabaseCustomerFavoritesRepository();
+      this.returnRepo = new SupabaseCustomerReturnRepository();
+      this.notificationRepo = new SupabaseCustomerNotificationRepository();
+      return;
+    }
+
+    const explicitMock = import.meta?.env?.VITE_USE_MOCK_DATA === 'true' || !isSupabaseConfigured;
+    this.useMock = explicitMock;
+
     if (this.useMock) {
       this.orderRepo = new MockCustomerOrderRepository();
       this.addressRepo = new MockCustomerAddressRepository();
@@ -41,6 +56,11 @@ class CustomerContainer {
       this.returnRepo = new SupabaseCustomerReturnRepository();
       this.notificationRepo = new SupabaseCustomerNotificationRepository();
     }
+  }
+
+  isUsingMockData() {
+    if (environment.isProduction) return false;
+    return this.useMock;
   }
 }
 

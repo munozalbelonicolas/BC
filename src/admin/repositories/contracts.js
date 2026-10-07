@@ -101,3 +101,9 @@ export class IAuditRepository {
   async getAll(options) { throw new Error('Not implemented'); }
   async create(entry) { throw new Error('Not implemented'); }
 }
+
+export class IPaymentRepository {
+  async getAll(options) { throw new Error('Not implemented'); }
+  async getById(id) { throw new Error('Not implemented'); }
+  async create(payment) { throw new Error('Not implemented'); }
+}

@@ -1,10 +1,13 @@
 /**
  * @file analyticsService.js
  * Dashboard metrics, period aggregations, and financial statistics calculator.
+ * STRICT ISOLATION: Production reports consider ONLY real production data (data_environment = 'production').
+ * Zero artificial numbers or fake data fallbacks.
  */
 
 import { orderRepo, productRepo, customerRepo } from '../repositories/factory.js';
 import { OrderStatus, PaymentStatus } from '../types/entities.js';
+import { environment } from '../../core/environment.js';
 
 export class AnalyticsService {
   /**
@@ -13,9 +16,22 @@ export class AnalyticsService {
    * @param {Object} [customRange] { from: Date, to: Date }
    */
   static async getDashboardMetrics(period = '30days', customRange = null) {
-    const { items: orders } = await orderRepo.getAll({ pageSize: 500 });
-    const { items: products } = await productRepo.getAll({ pageSize: 500 });
-    const { items: customers } = await customerRepo.getAll({ pageSize: 50 });
+    const { items: allOrders } = await orderRepo.getAll({ pageSize: 1000 });
+    const { items: allProducts } = await productRepo.getAll({ pageSize: 1000 });
+    const { items: allCustomers } = await customerRepo.getAll({ pageSize: 1000 });
+
+    // STRICT ISOLATION FILTER: In production, exclude any record that isn't 'production'
+    const orders = environment.isProduction
+      ? allOrders.filter(o => o.dataEnvironment === 'production')
+      : allOrders.filter(o => o.dataEnvironment === environment.dataEnvironment);
+
+    const products = environment.isProduction
+      ? allProducts.filter(p => p.dataEnvironment === 'production')
+      : allProducts.filter(p => p.dataEnvironment === environment.dataEnvironment);
+
+    const customers = environment.isProduction
+      ? allCustomers.filter(c => c.dataEnvironment === 'production')
+      : allCustomers.filter(c => c.dataEnvironment === environment.dataEnvironment);
 
     const now = new Date();
     let startDate = new Date();
@@ -37,21 +53,21 @@ export class AnalyticsService {
     // Filter orders within period
     const periodOrders = orders.filter(o => new Date(o.createdAt) >= startDate);
 
-    // Core financial KPIs
-    const paidOrders = periodOrders.filter(o => o.paymentStatus === PaymentStatus.PAID);
+    // Core financial KPIs (based solely on paid orders)
+    const paidOrders = periodOrders.filter(o => o.paymentStatus === PaymentStatus.PAID || o.paymentStatus === 'paid');
     const totalSales = paidOrders.reduce((acc, o) => acc + (Number(o.total) || 0), 0);
     const ordersCount = periodOrders.length;
-    const avgTicket = ordersCount > 0 ? Math.round(totalSales / (paidOrders.length || 1)) : 0;
+    const avgTicket = paidOrders.length > 0 ? Math.round(totalSales / paidOrders.length) : 0;
 
     // Order status breakdown
-    const pendingOrders = periodOrders.filter(o => o.status === OrderStatus.PENDING).length;
-    const preparingOrders = periodOrders.filter(o => o.status === OrderStatus.PREPARING).length;
-    const shippedOrders = periodOrders.filter(o => o.status === OrderStatus.SHIPPED).length;
-    const deliveredOrders = periodOrders.filter(o => o.status === OrderStatus.DELIVERED).length;
-    const cancelledOrders = periodOrders.filter(o => o.status === OrderStatus.CANCELLED).length;
+    const pendingOrders = periodOrders.filter(o => o.status === OrderStatus.PENDING || o.status.includes('Confirmado')).length;
+    const preparingOrders = periodOrders.filter(o => o.status === OrderStatus.PREPARING || o.status.includes('Preparando')).length;
+    const shippedOrders = periodOrders.filter(o => o.status === OrderStatus.SHIPPED || o.status.includes('camino')).length;
+    const deliveredOrders = periodOrders.filter(o => o.status === OrderStatus.DELIVERED || o.status.includes('Entregado')).length;
+    const cancelledOrders = periodOrders.filter(o => o.status === OrderStatus.CANCELLED || o.status.includes('Cancelado')).length;
 
     // Inventory health
-    const lowStockProducts = products.filter(p => p.stock > 0 && p.stock <= (p.minStock || 3));
+    const lowStockProducts = products.filter(p => p.stock > 0 && p.stock <= (p.minStock || 2));
     const outOfStockProducts = products.filter(p => p.stock <= 0);
 
     // Payment methods breakdown
@@ -61,10 +77,10 @@ export class AnalyticsService {
       paymentMethods[method] = (paymentMethods[method] || 0) + 1;
     });
 
-    // Time series for charts (last 7 or 14 points)
+    // Time series for charts
     const dailySeries = this.generateDailySeries(periodOrders, period === '7days' ? 7 : 14);
 
-    // Top selling products
+    // Top selling products (based purely on real items sold in periodOrders)
     const productSalesMap = {};
     periodOrders.forEach(o => {
       (o.items || []).forEach(item => {
@@ -78,7 +94,8 @@ export class AnalyticsService {
           };
         }
         productSalesMap[item.id].unitsSold += (item.quantity || 1);
-        productSalesMap[item.id].revenue += (item.subtotal || item.unitPrice || 0);
+        const itemRevenue = item.subtotal || (item.unitPrice ? item.unitPrice * (item.quantity || 1) : 0);
+        productSalesMap[item.id].revenue += itemRevenue;
       });
     });
 
@@ -86,26 +103,12 @@ export class AnalyticsService {
       .sort((a, b) => b.revenue - a.revenue)
       .slice(0, 5);
 
-    // If topSellingProducts has fewer than 5, supplement with catalog products
-    if (topSellingProducts.length < 5) {
-      products.slice(0, 5 - topSellingProducts.length).forEach(p => {
-        if (!topSellingProducts.some(t => t.id === p.id)) {
-          topSellingProducts.push({
-            id: p.id,
-            name: p.name,
-            image: p.image,
-            unitsSold: Math.floor(Math.random() * 8) + 2,
-            revenue: p.price * 2
-          });
-        }
-      });
-    }
-
     return {
       period,
       totalSales,
       ordersCount,
       avgTicket,
+      totalCustomers: customers.length,
       statuses: {
         pending: pendingOrders,
         preparing: preparingOrders,
@@ -141,15 +144,12 @@ export class AnalyticsService {
       const dayOrders = orders.filter(o => o.createdAt && o.createdAt.startsWith(dateStr));
       const daySales = dayOrders.reduce((sum, o) => sum + (Number(o.total) || 0), 0);
 
-      // Ensure slight realistic baseline if demo/mock
-      const simulatedSales = daySales > 0 ? daySales : (Math.floor(Math.random() * 900000) + 400000);
-      const simulatedCount = dayOrders.length > 0 ? dayOrders.length : Math.floor(Math.random() * 4) + 1;
-
+      // In production and real reporting: 0 is 0. No Math.random() fabrication!
       series.push({
         date: dateStr,
         label: dayLabel,
-        sales: daySales > 0 ? daySales : simulatedSales,
-        orders: dayOrders.length > 0 ? dayOrders.length : simulatedCount
+        sales: daySales,
+        orders: dayOrders.length
       });
     }
 
