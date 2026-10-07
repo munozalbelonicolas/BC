@@ -53,53 +53,55 @@ export class AccountLayout {
       <!-- Consumer Header -->
       <header class="portal-header">
         <div class="portal-header-inner">
-          <div style="display:flex; align-items:center; gap:16px;">
+          <div class="portal-brand-wrap">
             <a href="/" class="portal-brand" title="Ir a la tienda">
               <img src="/images/logo-bc-claro.png" alt="BC Especial Import" class="portal-brand-logo light-logo" />
               <img src="/images/logo-bc-oscuro.png" alt="BC Especial Import" class="portal-brand-logo dark-logo" />
             </a>
             <span class="portal-brand-badge">Mi Cuenta</span>
             ${environment.isDemo ? `
-              <span style="background:rgba(245, 158, 11, 0.15); color:#d97706; border:1px solid rgba(245, 158, 11, 0.3); font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:9999px;" title="Operando con datos de demostración aislados">🧪 Modo Demo</span>
+              <span class="portal-demo-pill" title="Operando con datos de demostración aislados">🧪 Demo</span>
             ` : ''}
           </div>
 
           <div class="portal-header-actions">
-            <!-- Light Harmonious Admin Switcher -->
+            <!-- Admin Switcher -->
             ${user?.email === 'munozalbelonicolas@gmail.com' || user?.role === 'admin' ? `
               <a href="/admin.html" class="portal-admin-btn" title="Ir al Panel de Administración de la tienda">
                 <span class="bolt-icon">⚡</span>
-                <span>Panel Admin</span>
+                <span class="portal-btn-label-desktop">Panel Admin</span>
+                <span class="portal-btn-label-mobile">Admin</span>
               </a>
             ` : ''}
 
             <!-- Back to Storefront -->
             <a href="/" class="portal-back-store-btn" title="Volver a comprar a la tienda">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-              <span>Volver a la Tienda</span>
+              <span class="portal-btn-label-desktop">Volver a la Tienda</span>
+              <span class="portal-btn-label-mobile">Tienda</span>
             </a>
 
             <!-- Theme Toggle Button -->
             <button class="portal-theme-toggle" id="theme-toggle-btn" title="${isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}" aria-label="Cambiar tema">
               ${isDark ? `
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-                <span style="font-size:12px; font-weight:600;">Claro</span>
+                <span class="theme-label">Claro</span>
               ` : `
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-                <span style="font-size:12px; font-weight:600;">Oscuro</span>
+                <span class="theme-label">Oscuro</span>
               `}
             </button>
 
             <!-- Notifications Bell -->
             <button class="portal-notification-bell" id="bell-notif-btn" title="Notificaciones" aria-label="Notificaciones">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
               ${this.unreadNotificationsCount > 0 ? `<span class="portal-notification-badge"></span>` : ''}
             </button>
 
             <!-- Cart Link -->
-            <a href="/#carrito" class="portal-back-store-btn" style="position:relative;" title="Carrito de compras">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-              ${cartCount > 0 ? `<span style="background:var(--acc-primary); color:white; font-size:10px; font-weight:700; border-radius:50%; width:16px; height:16px; display:inline-flex; align-items:center; justify-content:center; margin-left:4px;">${cartCount}</span>` : ''}
+            <a href="/#carrito" class="portal-cart-btn" title="Carrito de compras">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+              ${cartCount > 0 ? `<span class="portal-cart-badge">${cartCount}</span>` : ''}
             </a>
 
             <!-- User Chip -->
