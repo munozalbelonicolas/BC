@@ -55,6 +55,26 @@ class AccountToast {
       setTimeout(() => toast.remove(), 200);
     }, duration);
   }
+
+  success(message, duration = 3000) {
+    this.show(message, 'success', duration);
+  }
+
+  error(message, duration = 4000) {
+    this.show(message, 'danger', duration);
+  }
+
+  danger(message, duration = 4000) {
+    this.show(message, 'danger', duration);
+  }
+
+  warning(message, duration = 3500) {
+    this.show(message, 'warning', duration);
+  }
+
+  info(message, duration = 3000) {
+    this.show(message, 'info', duration);
+  }
 }
 
 export const accountToast = new AccountToast();
