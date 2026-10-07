@@ -177,6 +177,27 @@ ul {
   flex-shrink: 0;
 }
 
+.site-header-logo-img {
+  height: 46px;
+  width: auto;
+  max-width: 220px;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.25s ease;
+}
+
+.brand-logo:hover .site-header-logo-img {
+  transform: scale(1.03);
+}
+
+.site-footer-logo-img {
+  height: 42px;
+  width: auto;
+  max-width: 210px;
+  object-fit: contain;
+  display: block;
+}
+
 .logo-mark {
   display: flex;
   align-items: center;
