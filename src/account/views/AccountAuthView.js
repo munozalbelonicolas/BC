@@ -41,7 +41,6 @@ export class AccountAuthView {
               id="login-email" 
               class="account-input" 
               placeholder="tunombre@ejemplo.com" 
-              value="nicolas.munoz@ejemplo.com"
               required 
               autocomplete="email"
             />
@@ -58,7 +57,6 @@ export class AccountAuthView {
                 id="login-password" 
                 class="account-input" 
                 placeholder="••••••••" 
-                value="password123"
                 required 
                 autocomplete="current-password"
               />
@@ -93,7 +91,7 @@ export class AccountAuthView {
           </div>
 
           <div class="auth-demo-tip">
-            💡 <strong>Modo Demo / Prueba:</strong> Podés ingresar con cualquier correo o usar los datos prellenados para explorar la experiencia completa de cliente.
+            💡 <strong>Acceso a Clientes:</strong> Ingresá con tu correo registrado o creá una nueva cuenta en simples pasos.
           </div>
         </form>
       `;
@@ -273,8 +271,13 @@ export class AccountAuthView {
           return;
         }
 
+        if (res?.prompt_required) {
+          this.showSocialAuthModal(provider);
+          return;
+        }
+
         if (res?.success && res.profile) {
-          accountToast.success(`¡Bienvenido, ${res.profile.name}! Sesión iniciada con ${res.provider || provider}.`);
+          accountToast.success(`¡Bienvenida/o, ${res.profile.name}! Sesión iniciada con ${res.provider || provider}.`);
           if (this.onAuthSuccess) {
             this.onAuthSuccess(res.profile);
           }
@@ -412,5 +415,104 @@ export class AccountAuthView {
         }
       });
     }
+  }
+
+  showSocialAuthModal(provider) {
+    const isGoogle = provider === 'google';
+    const providerName = isGoogle ? 'Google' : 'Apple';
+    const iconSvg = isGoogle 
+      ? `<svg width="32" height="32" viewBox="0 0 24 24"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"/><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5.1 3.7-8.8z"/><path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.1-1.6.4-2.3L1.9 7.3C.7 9.7 0 12 0 14.5s.7 4.8 1.9 7.2l3.7-2.9z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2-6.4-4.8L1.9 17.4C3.7 21.1 7.5 24 12 24z"/></svg>`
+      : `<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 1.01-2.87-.96.04-2.13.64-2.77 1.39-.57.65-1.07 1.72-.94 2.76 1.08.08 2.12-.57 2.7-1.28z"/></svg>`;
+
+    const modalBackdrop = document.createElement('div');
+    modalBackdrop.className = 'portal-modal-backdrop';
+    modalBackdrop.innerHTML = `
+      <div class="portal-modal-box" style="max-width:440px; padding:28px 24px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            ${iconSvg}
+            <div>
+              <h3 style="font-size:18px; font-weight:700; color:var(--acc-text); margin:0;">Continuar con ${providerName}</h3>
+              <p style="font-size:12.5px; color:var(--acc-muted); margin:2px 0 0;">Ingresá con tu cuenta para acceder a tu panel.</p>
+            </div>
+          </div>
+          <button type="button" class="portal-modal-close" id="social-modal-close-btn" style="background:none; border:none; cursor:pointer; font-size:22px; color:var(--acc-muted); line-height:1;">&times;</button>
+        </div>
+
+        <form id="social-modal-form" style="margin-top:20px;">
+          <div class="account-field">
+            <label class="account-label" for="social-user-email">Tu correo de ${providerName} *</label>
+            <input 
+              type="email" 
+              id="social-user-email" 
+              class="account-input" 
+              placeholder="${isGoogle ? 'tu.correo@gmail.com' : 'tu.correo@icloud.com'}" 
+              required 
+              autofocus
+            />
+          </div>
+
+          <div class="account-field" style="margin-top:14px;">
+            <label class="account-label" for="social-user-name">Tu Nombre y Apellido *</label>
+            <input 
+              type="text" 
+              id="social-user-name" 
+              class="account-input" 
+              placeholder="Ej: Laura Gómez" 
+              required
+            />
+          </div>
+
+          <button type="submit" class="account-btn account-btn-primary" style="width:100%; height:44px; margin-top:20px; font-size:14.5px;" id="social-modal-submit-btn">
+            Ingresar a mi Cuenta
+          </button>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(modalBackdrop);
+    const closeModal = () => modalBackdrop.remove();
+
+    modalBackdrop.querySelector('#social-modal-close-btn').addEventListener('click', closeModal);
+    modalBackdrop.addEventListener('click', (e) => {
+      if (e.target === modalBackdrop) closeModal();
+    });
+
+    const modalForm = modalBackdrop.querySelector('#social-modal-form');
+    modalForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = modalBackdrop.querySelector('#social-user-email')?.value?.trim();
+      const fullName = modalBackdrop.querySelector('#social-user-name')?.value?.trim();
+
+      if (!email || !email.includes('@')) {
+        accountToast.error('Por favor ingresá un correo electrónico válido');
+        return;
+      }
+      if (!fullName) {
+        accountToast.error('Por favor ingresá tu nombre completo');
+        return;
+      }
+
+      const submitBtn = modalBackdrop.querySelector('#social-modal-submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="account-spinner"></span> Ingresando...';
+
+      try {
+        const res = await customerAuthService.signInWithOAuth(provider, {
+          email,
+          name: fullName
+        });
+
+        closeModal();
+        accountToast.success(`¡Bienvenida/o, ${res.profile.name}! Sesión iniciada con éxito.`);
+        if (this.onAuthSuccess) {
+          this.onAuthSuccess(res.profile);
+        }
+      } catch (err) {
+        accountToast.error(err.message || 'Error al iniciar sesión');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Ingresar a mi Cuenta';
+      }
+    });
   }
 }

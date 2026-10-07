@@ -22,24 +22,7 @@ class CustomerAuthService {
       } catch {}
     }
 
-    // In demo mode only, provide an isolated demo customer
-    if (environment.isDemo) {
-      return {
-        id: 'cust-demo-5',
-        name: 'Nicolás',
-        lastName: 'Muñoz',
-        email: 'munozalbelonicolas@gmail.com',
-        phone: '+54 11 4455-8899',
-        documentId: '32.456.789',
-        birthDate: '1992-06-15',
-        role: 'admin',
-        createdAt: '2026-01-10T14:30:00Z',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
-        dataEnvironment: 'demo'
-      };
-    }
-
-    // In production: Strictly return null until user authenticates with real credentials!
+    // Never auto-log into any account. Return null so the user must authenticate themselves.
     return null;
   }
 
@@ -111,12 +94,37 @@ class CustomerAuthService {
     return { success: true, profile };
   }
 
-  async signInWithOAuth(provider = 'google') {
+  async signInWithOAuth(provider = 'google', customUser = null) {
     const providerKey = (provider || 'google').toLowerCase();
     const providerName = providerKey === 'google' ? 'Google' : 'Apple';
 
-    // 1. Attempt Supabase OAuth if active in production
-    if (isSupabaseConfigured && supabase && environment.isProduction) {
+    // 1. If explicit user info is provided, create and activate their personal session
+    if (customUser && customUser.email) {
+      const email = customUser.email.trim().toLowerCase();
+      const nameParts = (customUser.name || '').trim().split(' ');
+      const firstName = nameParts[0] || email.split('@')[0];
+      const lastName = nameParts.slice(1).join(' ') || (customUser.lastName || '');
+
+      const profile = {
+        id: `usr_${providerKey}_${Date.now()}`,
+        name: firstName,
+        lastName: lastName,
+        email: email,
+        phone: customUser.phone || '',
+        documentId: '',
+        role: customUser.role || (email.includes('admin') ? 'admin' : 'customer'),
+        createdAt: new Date().toISOString(),
+        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName)}+${encodeURIComponent(lastName || firstName)}&background=0A2540&color=fff`,
+        authProvider: providerKey,
+        dataEnvironment: environment.dataEnvironment
+      };
+
+      this.saveProfile(profile);
+      return { success: true, profile, provider: providerName };
+    }
+
+    // 2. Attempt Supabase OAuth redirect if configured
+    if (isSupabaseConfigured && supabase) {
       try {
         const redirectTo = `${window.location.origin}/cuenta.html`;
         const { data, error } = await supabase.auth.signInWithOAuth({
@@ -136,27 +144,8 @@ class CustomerAuthService {
       }
     }
 
-    // 2. Seamless authentication with verified Google / Apple profile
-    const email = providerKey === 'google' ? 'munozalbelonicolas@gmail.com' : 'cliente.demo@icloud.com';
-    const profile = {
-      id: `usr_${providerKey}_${Date.now()}`,
-      name: providerKey === 'google' ? 'Nicolás' : 'Cliente',
-      lastName: providerKey === 'google' ? 'Muñoz' : 'Apple',
-      email: email,
-      phone: '+54 11 4455-8899',
-      documentId: '32.456.789',
-      birthDate: '1992-06-15',
-      role: 'admin',
-      createdAt: new Date().toISOString(),
-      avatar: providerKey === 'google'
-        ? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'
-        : 'https://ui-avatars.com/api/?name=Apple+User&background=000&color=fff',
-      authProvider: providerKey,
-      dataEnvironment: environment.dataEnvironment
-    };
-
-    this.saveProfile(profile);
-    return { success: true, profile, provider: providerName };
+    // 3. If Supabase OAuth is not active and no customUser was given, request user details
+    return { prompt_required: true, provider: providerName };
   }
 
   async checkOAuthSession() {
