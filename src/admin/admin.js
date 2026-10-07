@@ -4,6 +4,7 @@
  */
 
 import './styles/admin.css';
+import { themeService } from '../services/themeService.js';
 import { AdminLayout } from './components/AdminLayout.js';
 import { CommandPalette } from './components/CommandPalette.js';
 import { authorizer } from './core/rbac.js';
@@ -56,6 +57,9 @@ class AdminApp {
       console.error('admin-root container not found');
       return;
     }
+
+    // Initialize theme system
+    themeService.init();
 
     // Initialize Master Layout
     this.layout = new AdminLayout({

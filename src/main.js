@@ -1,5 +1,6 @@
 import { PRODUCTS, CATEGORIES, FAQS, TESTIMONIALS } from './data/products.js';
 import { store } from './state.js';
+import { themeService } from './services/themeService.js';
 import { 
   getProducts, 
   saveOrderToSupabase, 
@@ -8,6 +9,9 @@ import {
   signUpUser, 
   isSupabaseConfigured 
 } from './services/supabase.js';
+
+// Initialize light/dark theme system
+themeService.init();
 
 let currentProducts = PRODUCTS;
 

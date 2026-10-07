@@ -19,6 +19,7 @@ import { AccountNotificationsView } from './views/AccountNotificationsView.js';
 import { AccountProfileView } from './views/AccountProfileView.js';
 import { AccountSecurityView } from './views/AccountSecurityView.js';
 import { accountToast } from './components/AccountToast.js';
+import { themeService } from '../services/themeService.js';
 
 class CustomerAccountApp {
   constructor() {
@@ -33,6 +34,9 @@ class CustomerAccountApp {
       console.error('Customer Account root element (#account-root) not found.');
       return;
     }
+
+    // Initialize theme system (light / dark)
+    themeService.init();
 
     // Subscribe to auth state changes
     customerAuthService.subscribe((profile) => {
