@@ -68,7 +68,7 @@ export class AccountReturnsView {
       </div>
 
       <!-- Commercial Guarantee info card -->
-      <div class="portal-card" style="background:#f8fafc; margin-bottom:20px;">
+      <div class="portal-card" style="background:var(--acc-subtle); margin-bottom:20px;">
         <h3 style="font-size:15px; font-weight:700; color:var(--acc-text); margin-bottom:8px;">Garantía de Satisfacción BC Especial Import</h3>
         <ul style="font-size:13px; color:var(--acc-muted); line-height:1.7; padding-left:18px;">
           <li>Tenés <strong>30 días corridos</strong> desde la entrega para realizar cambios directos por cualquier disconformidad o falla de fábrica.</li>

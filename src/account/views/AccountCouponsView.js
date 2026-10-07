@@ -54,8 +54,8 @@ export class AccountCouponsView {
         ${cardsHtml}
       </div>
 
-      <div style="margin-top:24px; padding:16px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:12px; font-size:13px; color:#1e40af; display:flex; align-items:center; gap:12px;">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      <div style="margin-top:24px; padding:16px; background:var(--acc-primary-light); border:1px solid var(--acc-border); border-radius:12px; font-size:13px; color:var(--acc-text); display:flex; align-items:center; gap:12px;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--acc-primary); flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
         <span>¿Cómo usarlos? Copiá el código de tu cupón y pegalo en el campo "Cupón de descuento" al momento de finalizar tu compra en el carrito.</span>
       </div>
     `;

@@ -22,7 +22,7 @@ export class AccountNotificationsView {
 
   render() {
     const notifsHtml = this.notifications.length > 0 ? this.notifications.map(n => `
-      <div style="padding:16px 20px; border-bottom:1px solid var(--acc-border); background:${n.isRead ? 'white' : '#f0fdf4'}; display:flex; justify-content:space-between; align-items:flex-start; gap:16px;">
+      <div style="padding:16px 20px; border-bottom:1px solid var(--acc-border); background:${n.isRead ? 'var(--acc-surface)' : 'var(--acc-subtle)'}; display:flex; justify-content:space-between; align-items:flex-start; gap:16px;">
         <div style="flex:1;">
           <div style="display:flex; align-items:center; gap:8px;">
             <strong style="font-size:14px; color:var(--acc-text);">${n.title}</strong>

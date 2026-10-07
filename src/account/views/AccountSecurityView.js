@@ -54,18 +54,18 @@ export class AccountSecurityView {
         <div class="portal-card-title" style="margin-bottom:14px;">Dispositivos y Sesiones Activas</div>
 
         <div style="display:flex; flex-direction:column; gap:12px;">
-          <div style="display:flex; align-items:center; justify-content:space-between; padding:12px; background:#f8fafc; border:1px solid var(--acc-border); border-radius:10px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:12px; background:var(--acc-subtle); border:1px solid var(--acc-border); border-radius:10px;">
             <div style="display:flex; align-items:center; gap:12px;">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>
               <div>
                 <strong style="font-size:14px; color:var(--acc-text);">Navegador Web Actual (macOS / Chrome)</strong>
-                <div style="font-size:12px; color:#059669; font-weight:600;">● Sesión activa en este dispositivo</div>
+                <div style="font-size:12px; color:var(--acc-success); font-weight:600;">● Sesión activa en este dispositivo</div>
               </div>
             </div>
             <span class="status-pill success" style="font-size:11px;">En uso ahora</span>
           </div>
 
-          <div style="display:flex; align-items:center; justify-content:space-between; padding:12px; background:#ffffff; border:1px solid var(--acc-border); border-radius:10px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:12px; background:var(--acc-surface); border:1px solid var(--acc-border); border-radius:10px;">
             <div style="display:flex; align-items:center; gap:12px;">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18"/></svg>
               <div>
@@ -81,7 +81,7 @@ export class AccountSecurityView {
       </div>
 
       <!-- Danger Zone: Account Deletion -->
-      <div class="portal-card" style="border-color:#fecaca; background:#fffafa;">
+      <div class="portal-card" style="border-color:var(--acc-danger); background:var(--acc-danger-light);">
         <div style="font-size:16px; font-weight:700; color:var(--acc-danger-text); margin-bottom:6px;">Zona de Privacidad: Eliminar Cuenta</div>
         <p style="font-size:13px; color:var(--acc-muted); line-height:1.6; margin-bottom:16px;">
           Si decidís dar de baja tu cuenta, eliminaremos tus direcciones y preferencias personales. Las órdenes y comprobantes fiscales anteriores se conservarán únicamente por las obligaciones impositivas y legales vigentes ante AFIP/ARCA.

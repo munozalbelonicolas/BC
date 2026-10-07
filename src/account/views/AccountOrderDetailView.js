@@ -115,7 +115,7 @@ export class AccountOrderDetailView {
         </div>
 
         ${o.trackingCode ? `
-          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:14px; margin-top:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div style="background:var(--acc-subtle); border:1px solid var(--acc-border); border-radius:10px; padding:14px; margin-top:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
             <div>
               <span style="font-size:11.5px; text-transform:uppercase; font-weight:700; color:var(--acc-muted);">Seguimiento Logístico (${o.carrier})</span>
               <div style="font-family:monospace; font-size:14px; font-weight:700; color:var(--acc-text); margin-top:2px;">
