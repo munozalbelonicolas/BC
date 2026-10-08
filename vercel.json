@@ -1,0 +1,9 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/cuenta", "destination": "/cuenta.html" },
+    { "source": "/cuenta/:match*", "destination": "/cuenta.html" },
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/admin/:match*", "destination": "/admin.html" }
+  ]
+}
