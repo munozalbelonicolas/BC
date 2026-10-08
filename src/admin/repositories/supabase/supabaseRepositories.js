@@ -6,6 +6,7 @@
 
 import { supabase, isSupabaseConfigured } from '../../../services/supabase.js';
 import { environment } from '../../../core/environment.js';
+import { getStockStatus } from '../../types/entities.js';
 import {
   IProductRepository,
   ICategoryRepository,
@@ -355,21 +356,39 @@ export class SupabaseInventoryRepository extends IInventoryRepository {
     this.productRepo = productRepo;
   }
 
-  async getStockOverview() {
+  async getStockOverview(options = {}) {
     const { items: products } = await this.productRepo.getAll({ pageSize: 500 });
-    const lowStock = products.filter(p => p.stock > 0 && p.stock <= (p.minStock || 2));
-    const outOfStock = products.filter(p => p.stock <= 0);
-    const totalInventoryValue = products.reduce((acc, p) => acc + (p.price * (p.stock || 0)), 0);
+    let overview = (products || []).map(p => {
+      const stock = Number(p.stock) || 0;
+      const minStock = Number(p.minStock) || 3;
+      const stockStatus = getStockStatus(stock, minStock);
+      return {
+        productId: p.id,
+        productName: p.name,
+        sku: p.sku || 'N/A',
+        image: p.image || (Array.isArray(p.images) && p.images[0]) || '/images/store_front.jpg',
+        variant: p.variants?.[0]?.name || 'Principal',
+        variantSku: p.variants?.[0]?.sku || p.sku || 'STD',
+        availableStock: stock,
+        reservedStock: Number(p.reservedStock) || 0,
+        minStock: minStock,
+        status: stockStatus
+      };
+    });
 
-    return {
-      totalProducts: products.length,
-      totalUnits: products.reduce((acc, p) => acc + (p.stock || 0), 0),
-      totalValue: totalInventoryValue,
-      lowStockCount: lowStock.length,
-      outOfStockCount: outOfStock.length,
-      lowStockItems: lowStock,
-      outOfStockItems: outOfStock
-    };
+    if (options.status && options.status !== 'all') {
+      overview = overview.filter(item => item.status === options.status);
+    }
+
+    if (options.search) {
+      const q = options.search.toLowerCase();
+      overview = overview.filter(item =>
+        (item.productName && item.productName.toLowerCase().includes(q)) ||
+        (item.sku && item.sku.toLowerCase().includes(q))
+      );
+    }
+
+    return overview;
   }
 
   async adjustStock(adjustment) {
@@ -382,40 +401,105 @@ export class SupabaseInventoryRepository extends IInventoryRepository {
       throw new Error('[AISLAMIENTO] No es posible ajustar stock entre distintos data_environment.');
     }
 
-    const newStock = Math.max(0, product.stock + adjustment.quantity);
+    const qtyNum = Number(adjustment.quantity) || 0;
+    const stockBefore = Number(product.stock) || 0;
+    let newStock = stockBefore;
+
+    if (adjustment.type === 'ingreso') {
+      newStock = stockBefore + Math.abs(qtyNum);
+    } else if (adjustment.type === 'egreso') {
+      newStock = Math.max(0, stockBefore - Math.abs(qtyNum));
+    } else if (adjustment.type === 'ajuste') {
+      newStock = Math.max(0, qtyNum);
+    }
+
     await this.productRepo.update(product.id, { stock: newStock });
 
     const movement = {
       product_id: product.id,
       product_name: product.name,
+      variant_sku: adjustment.variantSku || product.sku || 'STD',
       type: adjustment.type || 'ajuste',
-      quantity: adjustment.quantity,
-      stock_before: product.stock,
+      quantity: newStock - stockBefore,
+      stock_before: stockBefore,
       stock_after: newStock,
       reason: adjustment.reason || 'Ajuste manual',
       user_email: adjustment.userEmail || 'admin@bcespecialimport.com.ar',
-      data_environment: environment.dataEnvironment
+      data_environment: environment.dataEnvironment,
+      created_at: new Date().toISOString()
     };
 
-    const { data, error } = await supabase.from('inventory_movements').insert([movement]).select().single();
-    if (error) console.error('[SupabaseInventoryRepository] Error insert movement:', error);
-    return data || movement;
+    try {
+      const { data, error } = await supabase.from('inventory_movements').insert([movement]).select().single();
+      if (error && error.code !== 'PGRST205') {
+        console.warn('[SupabaseInventoryRepository] Error insert movement:', error);
+      }
+      if (data) {
+        return {
+          movement: {
+            id: data.id,
+            productId: data.product_id,
+            productName: data.product_name,
+            variantSku: data.variant_sku,
+            type: data.type,
+            quantity: data.quantity,
+            stockBefore: data.stock_before,
+            stockAfter: data.stock_after,
+            reason: data.reason,
+            userEmail: data.user_email,
+            createdAt: data.created_at
+          },
+          stockAfter: newStock
+        };
+      }
+    } catch (e) {
+      console.warn('Movements table insert notice:', e);
+    }
+
+    return {
+      movement: {
+        id: `mov_${Date.now()}`,
+        productId: movement.product_id,
+        productName: movement.product_name,
+        variantSku: movement.variant_sku,
+        type: movement.type,
+        quantity: movement.quantity,
+        stockBefore: stockBefore,
+        stockAfter: newStock,
+        reason: movement.reason,
+        userEmail: movement.user_email,
+        createdAt: movement.created_at
+      },
+      stockAfter: newStock
+    };
   }
 
   async getMovements(options = {}) {
-    if (!isSupabaseConfigured || !supabase) return { items: [], total: 0 };
+    if (!isSupabaseConfigured || !supabase) return [];
     try {
-      const { data, count, error } = await supabase
+      const { data, error } = await supabase
         .from('inventory_movements')
-        .select('*', { count: 'exact' })
+        .select('*')
         .eq('data_environment', environment.dataEnvironment)
         .order('created_at', { ascending: false })
         .limit(options.pageSize || 50);
 
-      if (error || !data) return { items: [], total: 0 };
-      return { items: data, total: count || data.length };
+      if (error || !data) return [];
+      return data.map(m => ({
+        id: m.id,
+        productId: m.product_id,
+        productName: m.product_name,
+        variantSku: m.variant_sku || 'STD',
+        type: m.type,
+        quantity: m.quantity,
+        stockBefore: m.stock_before,
+        stockAfter: m.stock_after,
+        reason: m.reason,
+        userEmail: m.user_email,
+        createdAt: m.created_at
+      }));
     } catch {
-      return { items: [], total: 0 };
+      return [];
     }
   }
 }

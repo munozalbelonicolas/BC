@@ -70,13 +70,15 @@ export class InventoryView {
     const mount = this.container.querySelector('#inv-body-mount');
     try {
       if (this.activeTab === 'stock') {
-        this.overviewItems = await InventoryService.getOverview({
+        const res = await InventoryService.getOverview({
           status: this.statusFilter,
           search: this.searchQuery
         });
+        this.overviewItems = Array.isArray(res) ? res : (res?.items || []);
         this.renderStockTable();
       } else {
-        this.movements = await InventoryService.getMovements();
+        const res = await InventoryService.getMovements();
+        this.movements = Array.isArray(res) ? res : (res?.items || []);
         this.renderMovementsTable();
       }
     } catch (err) {
@@ -107,7 +109,8 @@ export class InventoryView {
       </div>
     `;
 
-    const rows = this.overviewItems.map(item => {
+    const items = Array.isArray(this.overviewItems) ? this.overviewItems : [];
+    const rows = items.map(item => {
       let badgeCls = 'badge-emerald';
       let statusText = 'Disponible';
       if (item.status === StockStatus.OUT_OF_STOCK) {
@@ -196,7 +199,8 @@ export class InventoryView {
   renderMovementsTable() {
     const mount = this.container.querySelector('#inv-body-mount');
 
-    const rows = this.movements.map(m => {
+    const movs = Array.isArray(this.movements) ? this.movements : [];
+    const rows = movs.map(m => {
       const typeMap = {
         ingreso: { label: 'Ingreso', cls: 'badge-emerald' },
         egreso: { label: 'Egreso', cls: 'badge-danger' },
