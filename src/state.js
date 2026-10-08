@@ -1,4 +1,5 @@
 import { environment } from './core/environment.js';
+import { PRODUCTS } from './data/products.js';
 
 // LocalStorage keys segregated by environment
 const getStorageKey = (base) => `${base}_${environment.current}`;
@@ -10,7 +11,7 @@ const ORDERS_STORAGE_KEY = 'bc_orders_v2';
 
 class Store {
   constructor() {
-    this.catalog = [];
+    this.catalog = [...PRODUCTS];
     this.cart = this.loadCart();
     this.wishlist = this.loadWishlist();
     this.user = this.loadUser();

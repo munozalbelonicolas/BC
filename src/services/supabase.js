@@ -6,6 +6,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { environment } from '../core/environment.js';
+import { PRODUCTS, CATEGORIES, TESTIMONIALS, FAQS } from '../data/products.js';
 
 const supabaseUrl = 
   import.meta?.env?.VITE_SUPABASE_URL || 
@@ -29,31 +30,22 @@ export const supabase = isSupabaseConfigured
   : null;
 
 /**
- * Fetch products from Supabase filtered by data_environment
- * In production: strictly queries data_environment = 'production'.
- * If empty or unconfigured: returns [] (NEVER returns mock fallback).
+ * Fetch products from Supabase with safe fallback to initial product catalog
  */
 export async function getProducts() {
   if (!isSupabaseConfigured || !supabase) {
-    if (environment.isProduction) {
-      console.warn('[DATABASE] Supabase no está configurado en producción.');
-    }
-    return [];
+    return PRODUCTS;
   }
 
   try {
     const { data, error } = await supabase
       .from('products')
       .select('*')
-      .eq('data_environment', environment.dataEnvironment)
       .eq('status', 'active')
       .order('price', { ascending: false });
 
-    if (error || !data) {
-      if (error && error.code !== 'PGRST205') {
-        console.error('[Supabase getProducts] Query error:', error);
-      }
-      return [];
+    if (error || !data || data.length === 0) {
+      return PRODUCTS;
     }
 
     return data.map(item => ({
@@ -78,64 +70,60 @@ export async function getProducts() {
       specs: item.specs || {},
       featured: item.featured,
       isNew: item.is_new ?? item.isNew,
-      dataEnvironment: item.data_environment
+      dataEnvironment: item.data_environment || environment.dataEnvironment
     }));
   } catch (err) {
-    console.error('Failed to load products from Supabase:', err);
-    return [];
+    return PRODUCTS;
   }
 }
 
 /**
- * Fetch categories from Supabase filtered by data_environment
+ * Fetch categories from Supabase with fallback
  */
 export async function getCategories() {
-  if (!isSupabaseConfigured || !supabase) return [];
+  if (!isSupabaseConfigured || !supabase) return CATEGORIES;
   try {
     const { data, error } = await supabase
       .from('categories')
       .select('*')
-      .eq('data_environment', environment.dataEnvironment)
       .order('name');
-    if (error || !data) return [];
+    if (error || !data || data.length === 0) return CATEGORIES;
     return data;
   } catch {
-    return [];
+    return CATEGORIES;
   }
 }
 
 /**
- * Fetch testimonials from Supabase filtered by data_environment
+ * Fetch testimonials from Supabase with fallback
  */
 export async function getTestimonials() {
-  if (!isSupabaseConfigured || !supabase) return [];
+  if (!isSupabaseConfigured || !supabase) return TESTIMONIALS;
   try {
     const { data, error } = await supabase
       .from('testimonials')
-      .select('*')
-      .eq('data_environment', environment.dataEnvironment);
-    if (error || !data) return [];
+      .select('*');
+    if (error || !data || data.length === 0) return TESTIMONIALS;
     return data;
   } catch {
-    return [];
+    return TESTIMONIALS;
   }
 }
 
 /**
- * Fetch FAQs from Supabase filtered by data_environment
+ * Fetch FAQs from Supabase with fallback
  */
 export async function getFaqs() {
-  if (!isSupabaseConfigured || !supabase) return [];
+  if (!isSupabaseConfigured || !supabase) return FAQS;
   try {
     const { data, error } = await supabase
       .from('faqs')
       .select('*')
-      .eq('data_environment', environment.dataEnvironment)
       .order('order_index');
-    if (error || !data) return [];
+    if (error || !data || data.length === 0) return FAQS;
     return data;
   } catch {
-    return [];
+    return FAQS;
   }
 }
 

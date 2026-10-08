@@ -1,6 +1,7 @@
 import { store } from './state.js';
 import { themeService } from './services/themeService.js';
 import { environment } from './core/environment.js';
+import { PRODUCTS, FAQS } from './data/products.js';
 import { 
   getProducts, 
   getFaqs,
@@ -14,7 +15,7 @@ import {
 // Initialize light/dark theme system
 themeService.init();
 
-let currentProducts = [];
+let currentProducts = PRODUCTS;
 
 // Utility: format Argentine Peso currency
 function formatARS(amount) {

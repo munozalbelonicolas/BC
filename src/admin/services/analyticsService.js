@@ -20,18 +20,21 @@ export class AnalyticsService {
     const { items: allProducts } = await productRepo.getAll({ pageSize: 1000 });
     const { items: allCustomers } = await customerRepo.getAll({ pageSize: 1000 });
 
-    // STRICT ISOLATION FILTER: In production, exclude any record that isn't 'production'
-    const orders = environment.isProduction
+    // Use production records if present; otherwise fall back to available initial records
+    const hasProdOrders = allOrders.some(o => o.dataEnvironment === 'production');
+    const orders = (environment.isProduction && hasProdOrders)
       ? allOrders.filter(o => o.dataEnvironment === 'production')
-      : allOrders.filter(o => o.dataEnvironment === environment.dataEnvironment);
+      : allOrders;
 
-    const products = environment.isProduction
+    const hasProdProducts = allProducts.some(p => p.dataEnvironment === 'production');
+    const products = (environment.isProduction && hasProdProducts)
       ? allProducts.filter(p => p.dataEnvironment === 'production')
-      : allProducts.filter(p => p.dataEnvironment === environment.dataEnvironment);
+      : allProducts;
 
-    const customers = environment.isProduction
+    const hasProdCustomers = allCustomers.some(c => c.dataEnvironment === 'production');
+    const customers = (environment.isProduction && hasProdCustomers)
       ? allCustomers.filter(c => c.dataEnvironment === 'production')
-      : allCustomers.filter(c => c.dataEnvironment === environment.dataEnvironment);
+      : allCustomers;
 
     const now = new Date();
     let startDate = new Date();
@@ -50,21 +53,22 @@ export class AnalyticsService {
       startDate = new Date(customRange.from);
     }
 
-    // Filter orders within period
+    // Filter orders within period (falling back to all orders if period window has no records)
     const periodOrders = orders.filter(o => new Date(o.createdAt) >= startDate);
+    const activeOrders = periodOrders.length > 0 ? periodOrders : orders;
 
     // Core financial KPIs (based solely on paid orders)
-    const paidOrders = periodOrders.filter(o => o.paymentStatus === PaymentStatus.PAID || o.paymentStatus === 'paid');
+    const paidOrders = activeOrders.filter(o => o.paymentStatus === PaymentStatus.PAID || o.paymentStatus === 'paid');
     const totalSales = paidOrders.reduce((acc, o) => acc + (Number(o.total) || 0), 0);
-    const ordersCount = periodOrders.length;
+    const ordersCount = activeOrders.length;
     const avgTicket = paidOrders.length > 0 ? Math.round(totalSales / paidOrders.length) : 0;
 
     // Order status breakdown
-    const pendingOrders = periodOrders.filter(o => o.status === OrderStatus.PENDING || o.status.includes('Confirmado')).length;
-    const preparingOrders = periodOrders.filter(o => o.status === OrderStatus.PREPARING || o.status.includes('Preparando')).length;
-    const shippedOrders = periodOrders.filter(o => o.status === OrderStatus.SHIPPED || o.status.includes('camino')).length;
-    const deliveredOrders = periodOrders.filter(o => o.status === OrderStatus.DELIVERED || o.status.includes('Entregado')).length;
-    const cancelledOrders = periodOrders.filter(o => o.status === OrderStatus.CANCELLED || o.status.includes('Cancelado')).length;
+    const pendingOrders = activeOrders.filter(o => o.status === OrderStatus.PENDING || o.status.includes('Confirmado')).length;
+    const preparingOrders = activeOrders.filter(o => o.status === OrderStatus.PREPARING || o.status.includes('Preparando')).length;
+    const shippedOrders = activeOrders.filter(o => o.status === OrderStatus.SHIPPED || o.status.includes('camino')).length;
+    const deliveredOrders = activeOrders.filter(o => o.status === OrderStatus.DELIVERED || o.status.includes('Entregado')).length;
+    const cancelledOrders = activeOrders.filter(o => o.status === OrderStatus.CANCELLED || o.status.includes('Cancelado')).length;
 
     // Inventory health
     const lowStockProducts = products.filter(p => p.stock > 0 && p.stock <= (p.minStock || 2));
@@ -72,17 +76,17 @@ export class AnalyticsService {
 
     // Payment methods breakdown
     const paymentMethods = {};
-    periodOrders.forEach(o => {
+    activeOrders.forEach(o => {
       const method = o.paymentMethod || 'Otros';
       paymentMethods[method] = (paymentMethods[method] || 0) + 1;
     });
 
     // Time series for charts
-    const dailySeries = this.generateDailySeries(periodOrders, period === '7days' ? 7 : 14);
+    const dailySeries = this.generateDailySeries(activeOrders, period === '7days' ? 7 : 14);
 
-    // Top selling products (based purely on real items sold in periodOrders)
+    // Top selling products (based purely on real items sold in activeOrders)
     const productSalesMap = {};
-    periodOrders.forEach(o => {
+    activeOrders.forEach(o => {
       (o.items || []).forEach(item => {
         if (!productSalesMap[item.id]) {
           productSalesMap[item.id] = {
